@@ -27,7 +27,7 @@
   
 <br>
 
-## 🏃 Coding Convention 🏃
+## ☁️ Coding Convention ☁️
 <br>
 <details markdown="1">
 <summary>네이밍</summary>
