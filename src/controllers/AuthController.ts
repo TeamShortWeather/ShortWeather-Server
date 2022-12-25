@@ -3,13 +3,8 @@ import statusCode from "../modules/statusCode";
 import util from "../modules/util";
 import message from "../modules/responseMessage";
 import AuthService from "../services/AuthService";
-const social = require("../modules/social");
 const db = require("../loaders/db");
-const axios = require("axios");
-const jwt = require("jsonwebtoken");
-const qs = require("qs");
 import jwtHandler from "../modules/jwtHandler";
-import { refreshToken } from "firebase-admin/app";
 const dotenv = require("dotenv");
 dotenv.config();
 
