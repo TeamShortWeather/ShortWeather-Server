@@ -27,7 +27,7 @@
   
 <br>
 
-## 🏃 Coding Convention 🏃
+## ☁️ Coding Convention ☁️
 <br>
 <details markdown="1">
 <summary>네이밍</summary>
@@ -124,32 +124,48 @@
 ### <strong> ☔️ APIs ☔️ </strong>
 |   EndPoint   |               detail               | developer | done |
 | :------: | :--------------------------------: | :-------: |:--: |
-|   User  |       미정       |   미정    |  ✅  |
-|         |       미정       |   미정    |  ✅  |
-|   Weather   |       미정       |   미정    |  ✅  |
-|         |       미정       |   미정    |  ✅  |
+|   User  |       유저 등록 확인       |   민욱    |  ❌  |
+|         |       유정 정보 입력하기       |   도연    |  ❌  |
+|   Setting      |       기상시간 설정       |   수현    |  ❌  |
+|         |       외출/귀가시간대 설정       |   민욱    |  ❌  |
+|   Weather1   |       오늘 날씨 정보 조회       |   도연    |  ❌  |
+|   Weather2   |       시간별 오늘 날씨 정보 조회       |   수현    |  ❌  |
+|         |       시간대별 날씨 - 날씨 조회       |   민욱    |  ❌  |
+|         |       시간대별 날씨 - 미세먼지 조회       |   도연    |  ❌  |
+|         |       시간대별 날씨 - 강수 조회       |   수현    |  ❌  |
 
 <br>
 
-### <strong> Dependencies</strong>
-```
-  
-```
+
 
 <br>
 
 ## <strong> ERD & Directory Tree</strong>
 <details>
 <summary>🗄 ERD</summary>
-
-
+<img src="https://user-images.githubusercontent.com/82046935/210375222-d0b48e33-0555-466d-a526-8449eec7cfbd.png">
 
 </details>
 <br>
 <details>
 <summary>📦 Directory Tree</summary>
 
-```bash
+```
+	
+├── tsconfig.json
+├── nodemone.json
+├── package.json
+└── src
+    ├── config
+    ├── controllers
+    ├── interfaces
+    ├── loaders
+    ├── middleware
+    ├── modules
+    ├── routes
+    ├── service
+    └──  index.ts
+└── test
 
 ```
 </details>
