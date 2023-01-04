@@ -36,6 +36,7 @@
     "typescript": "^4.6.3"
   },
   "dependencies": {
+    "accuweather": "^1.0.1",
     "apple-auth": "^1.0.7",
     "aws-sdk": "^2.1171.0",
     "axios": "^0.27.2",
@@ -56,6 +57,7 @@
     "node-schedule": "^2.1.0",
     "pg": "^8.7.3",
     "reflect-metadata": "^0.1.13",
+    "request": "^2.88.2",
     "typeorm": "^0.2",
     "typeorm-naming-strategies": "^2.0.0"
   },
