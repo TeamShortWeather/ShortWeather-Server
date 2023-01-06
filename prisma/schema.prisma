@@ -7,32 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model dailyForecast {
-  id      Int     @id(map: "daily_forecast_pk") @unique(map: "daily_forecast_id_uindex") @default(autoincrement())
-  date    String? @db.VarChar(50)
-  sunset  String? @db.VarChar(50)
-  sunrise String? @db.VarChar(50)
-  minTemp Int
-  maxTemp Int
-}
-
 model hourly_forecast {
   id          Int     @id(map: "hourly_forecast_pk") @unique(map: "hourly_forecast_id_uindex") @default(autoincrement())
   date        String? @db.VarChar(20)
   time        String? @db.VarChar(20)
   temperature Int?
   pm25        Int?
-  rain        Int?
-}
-
-model observedWeather {
-  id          Int     @id @default(autoincrement())
-  date        String? @db.VarChar(50)
-  time        String? @db.VarChar(50)
-  temperature Int?
-  humidity    Int?
-  pm25        Int?
-  pm10        Int?
   rain        Int?
 }
 
@@ -60,4 +40,24 @@ model weather {
   sensory_temperature_ Int?    @map("sensory_temperature ")
 
   @@index([date], map: "weather_date_index")
+}
+
+model daily_forecast {
+  id      Int     @id(map: "daily_forecast_pk") @unique(map: "daily_forecast_id_uindex") @default(autoincrement())
+  date    String? @db.VarChar(50)
+  sunset  String? @db.VarChar(50)
+  sunrise String? @db.VarChar(50)
+  minTemp Int
+  maxTemp Int
+}
+
+model observed_weather {
+  id          Int     @id(map: "observedWeather_pkey") @default(autoincrement())
+  date        String? @db.VarChar(50)
+  time        String? @db.VarChar(50)
+  temperature Int?
+  humidity    Int?
+  pm25        Int?
+  pm10        Int?
+  rain        Int?
 }
