@@ -1,2 +1,3 @@
 import AuthService from "./AuthService";
-export default { AuthService };
+import ScheduleService from "./ScheduleService";
+export default { AuthService, ScheduleService };
