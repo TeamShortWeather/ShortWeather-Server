@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model dailyForecast {
+  id      Int     @id(map: "daily_forecast_pk") @unique(map: "daily_forecast_id_uindex") @default(autoincrement())
+  date    String? @db.VarChar(50)
+  sunset  String? @db.VarChar(50)
+  sunrise String? @db.VarChar(50)
+  minTemp Int
+  maxTemp Int
+}
+
+model hourly_forecast {
+  id          Int     @id(map: "hourly_forecast_pk") @unique(map: "hourly_forecast_id_uindex") @default(autoincrement())
+  date        String? @db.VarChar(20)
+  time        String? @db.VarChar(20)
+  temperature Int?
+  pm25        Int?
+  rain        Int?
+}
+
+model observedWeather {
+  id          Int     @id @default(autoincrement())
+  date        String? @db.VarChar(50)
+  time        String? @db.VarChar(50)
+  temperature Int?
+  humidity    Int?
+  pm25        Int?
+  pm10        Int?
+  rain        Int?
+}
+
+model user {
+  id           Int       @id(map: "user_pk") @unique(map: "user_id_uindex") @default(autoincrement())
+  created_at   DateTime? @default(now()) @db.Timestamp(6)
+  updated_at   DateTime? @default(now()) @db.Timestamp(6)
+  gender       String    @db.VarChar(20)
+  temp_sens    String    @db.VarChar(100)
+  wake_up_time String    @db.VarChar(30)
+  go_out_time  String    @db.VarChar(30)
+  go_home_time String    @db.VarChar(30)
+  is_deleted   Boolean?  @default(false)
+  fcm_token    String?   @db.VarChar(255)
+  device_token String    @db.VarChar(500)
+}
+
+model weather {
+  id                   Int     @id(map: "weather_pk") @unique(map: "weather_id_uindex")
+  temp                 Int
+  time                 Int
+  date                 Int?
+  wind                 Int?
+  weatherMessage       String? @db.VarChar(50)
+  sensory_temperature_ Int?    @map("sensory_temperature ")
+
+  @@index([date], map: "weather_date_index")
+}
