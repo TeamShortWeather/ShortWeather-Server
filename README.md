@@ -1,6 +1,6 @@
 ## ☀️☁️☔️ShortWeather-Server☀️☁️☔️
 
-> 31th IN SOPT 합동세미나 5조 <br>
+> 31th IN SOPT ShortWeather <br>
 > 프로젝트 기간 : 2022.12.10 ~ 
 
 <br>

@@ -18,13 +18,6 @@ interface ErrorType {
   status: number;
 }
 
-// //push
-// var admin = require('firebase-admin');
-// var serviceAccount = require('../photosurfer-firebase-adminsdk-j0t18-cfad93f7a2.json');
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-// });
-
 const rule = new schedule.RecurrenceRule();
 rule.dayOfWeek = [0, new schedule.Range(0, 6)];
 rule.hour = 8;
