@@ -22,6 +22,9 @@ const message = {
   TOKEN_EXPIRED: '토큰 만료',
   CREATE_DEVICE_SUCCESS: '디바이스 회원가입 성공',
   DEVICE_LOGIN_SUCCESS: '디바이스 로그인 성공',
+
+  READ_OBSERVED_WEATHER_SUCCESS: '관측 날씨 조회 성공',
+  READ_OBSERVED_WEATHER_FAIL: '관측 날씨 조회 실패',
 };
 
 export default message;
