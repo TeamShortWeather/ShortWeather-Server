@@ -5,9 +5,9 @@ import rm from "../modules/responseMessage";
 import util from "../modules/util"
 
 //* 관측 날씨 조회
-const getObserved = async (req: Request, res: Response) => {
+const createObserved = async (req: Request, res: Response) => {
 
-  const data = await ScheduleService.getObserved();
+  const data = await ScheduleService.createObserved();
 
   if (!data) return res.status(sc.INTERNAL_SERVER_ERROR).send(util.fail(sc.INTERNAL_SERVER_ERROR, rm.READ_OBSERVED_WEATHER_FAIL));
 
@@ -21,6 +21,6 @@ const createDailyForecast = async (req: Request, res: Response) => {
 };
 
 export default {
-  getObserved,
+  createObserved,
   createDailyForecast
 };

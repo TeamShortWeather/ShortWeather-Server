@@ -14,7 +14,7 @@ interface Weather {
 };
 
 //* 현황 조회
-const getObserved = async () => {
+const createObserved = async () => {
   let now = dayjs();
   if (now.get('m') < 40) {
     if (now.get('h') == 0) {
@@ -157,7 +157,7 @@ const createDailyForecast = async () => {
 };
 
 const observedService = {
-  getObserved,
+  createObserved,
   createDailyForecast,
 };
 
