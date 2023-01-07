@@ -74,7 +74,7 @@ const createObserved = async () => {
 
   if (ultraSrtNcst == undefined || dust == undefined) return null;
 
-  const realTime = dayjs().format("HH:00");
+  const realTime = dayjs().format("HH00");
   const realDate = dayjs().format("YYYYMMDD");
   const data = {
     date: realDate,
