@@ -26,8 +26,7 @@ const sign = (userId: number) => {
     userId,
   };
 
-  //! 기간을 어느 정도로 할지!
-  const accessToken = jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: "10d" });
+  const accessToken = jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: "1d" });
   return accessToken;
 };
 
@@ -116,45 +115,45 @@ const getRefreshToken = async (code): Promise<string> => {
 };
 
 
-// //* token 검사!
-// const verify = (token: string) => {
-//   let decoded: string | jwt.JwtPayload;
+//* token 검사!
+const verify = (token: string) => {
+  let decoded: string | jwt.JwtPayload;
 
-//   try {
-//     decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-//   } catch (error: any) {
-//     if (error.message === "jwt expired") {
-//       return tokenType.TOKEN_EXPIRED;
-//     } else if (error.message === "invalid token") {
-//       return tokenType.TOKEN_INVALID;
-//     } else {
-//       return tokenType.TOKEN_INVALID;
-//     }
-//   }
-
-//   return decoded;
-// };
-
-//token 검증
-const verify = token => {
-  let decode;
   try {
-    decode = jwt.verify(token, secretKey);
-  } catch (error) {
-    if (error.message === 'jwt expired') {
-      console.log('만료된 토큰입니다.');
+    decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+  } catch (error: any) {
+    if (error.message === "jwt expired") {
       return TOKEN_EXPIRED;
-    } else if (error.message === 'invalid signature') {
-      console.log('유효하지 않은 토큰입니다.');
+    } else if (error.message === "invalid token") {
       return TOKEN_INVALID;
     } else {
-      console.log(error.message);
-      return 9999;
+      return TOKEN_INVALID;
     }
   }
-  // 해독이나 인증이 완료되면, 해독된 상태의 JWT 반환
-  return decode;
+
+  return decoded;
 };
+
+// //token 검증
+// const verify = token => {
+//   let decode;
+//   try {
+//     decode = jwt.verify(token, secretKey);
+//   } catch (error) {
+//     if (error.message === 'jwt expired') {
+//       console.log('만료된 토큰입니다.');
+//       return TOKEN_EXPIRED;
+//     } else if (error.message === 'invalid signature') {
+//       console.log('유효하지 않은 토큰입니다.');
+//       return TOKEN_INVALID;
+//     } else {
+//       console.log(error.message);
+//       return 9999;
+//     }
+//   }
+//   // 해독이나 인증이 완료되면, 해독된 상태의 JWT 반환
+//   return decode;
+// };
 
 const verifyAndRenewalToken = token => {
   let decoded;
