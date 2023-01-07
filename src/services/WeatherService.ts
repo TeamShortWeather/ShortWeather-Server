@@ -8,11 +8,11 @@ const getTodayWeather = async () => {
     //! 동시에 db 출발했다가 먼저 받아오는 친구부터 하도록 수정
     const now = dayjs();
     let date = now.format("YYYYMMDD");
-    const time = now.format("HH:00"); //! :제외로 수정 예정
+    const time = now.format("HH00");
     const observedToday = await prisma.observed_weather.findFirst({
         where: {
             date: date,
-            time: "02:00",//time,
+            time: time,
         }
     });
     const dailyForecast = await prisma.daily_forecast.findFirst({
@@ -24,9 +24,12 @@ const getTodayWeather = async () => {
     const observedYesterday = await prisma.observed_weather.findFirst({
         where: {
             date: date,
-            time: "18:00",//time,
+            time: "18:00",//time, //! 수정예정
         }
     });
+
+    if(!observedToday || !observedYesterday || !dailyForecast)
+        return null;
 
     const result: TodayWeatherDTO = {
         location: "종로구",
