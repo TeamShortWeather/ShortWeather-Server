@@ -214,11 +214,6 @@ const createDailyForecast = async () => {
     minTemp: filteredFcst[0]['fcstValue'], 
     maxTemp: filteredFcst[1]['fcstValue'],
     warning: wrnCode,
-  }
-    sunrise: sunData["sunrise"].trim(),
-    sunset: sunData["sunset"].trim(),
-    minTemp: filteredFcst[0]["fcstValue"],
-    maxTemp: filteredFcst[1]["fcstValue"],
   };
 
   const data = await prisma.daily_forecast.create({
