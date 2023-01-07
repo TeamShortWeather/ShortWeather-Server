@@ -6,3 +6,10 @@ export interface DailyForecastDTO {
     maxTemp: string,
     warning: number,
 }
+
+export interface HourlyForecastDTO {
+  date: string;
+  time: string;
+  temperature: number;
+  rain: number;
+}
