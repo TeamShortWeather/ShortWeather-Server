@@ -3,5 +3,6 @@ export interface DailyForecastDTO {
     sunset: string,
     sunrise: string,
     minTemp: string,
-    maxTemp: string
+    maxTemp: string,
+    warning: number,
 }

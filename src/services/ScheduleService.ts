@@ -1,8 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import { DailyForecastDTO } from '../DTO/ScheduleDTO';
-const prisma = new PrismaClient();
 import axios from "axios";
 import dayjs from "dayjs";
+
+const prisma = new PrismaClient();
 
 interface Weather {
   baseDate: string,
@@ -115,14 +116,24 @@ const createDailyForecast = async () => {
   wrnQueryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); 
   wrnQueryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('10');
   wrnQueryParams += '&' + encodeURIComponent('dataType') + '=' + encodeURIComponent('JSON'); 
-  wrnQueryParams += '&' + encodeURIComponent('areaCode') + '=' + encodeURIComponent('L1100400'); 
+  wrnQueryParams += '&' + encodeURIComponent('areaCode') + '=' + encodeURIComponent('L1021600'); 
 
   const sunData = (await axios.get(sunUrl+sunQueryParams)).data.response.body.items.item;
   const fcstData = (await axios.get(fcstUrl+fcstQueryParams)).data.response.body.items.item;
-  const wrnData = (await axios.get(wrnUrl+wrnQueryParams)).data.response;
+  const wrnRes = (await axios.get(wrnUrl+wrnQueryParams)).data.response;
 
-  if (wrnData.header.resultCode!='03') {
-      console.log(3456)
+  const wrnArr = [8, 5, 7, 2, 3, 12, 1, 6, 9, 4]
+  let wrnCode = null
+
+  if (wrnRes.header.resultCode!='03') {
+      const wrnData = wrnRes.body.items.item;
+
+      const indexArr = wrnData.map((element) => {
+          return wrnArr.indexOf(element.warnVar);
+      })
+
+      const minIndex = (indexArr.indexOf(Math.min(...indexArr)));
+      wrnCode = wrnData[indexArr[minIndex]].warnVar;
   }
   
   const fcstFilter = (item) => {
@@ -141,17 +152,21 @@ const createDailyForecast = async () => {
     sunset: sunData['sunset'].trim(),
     minTemp: filteredFcst[0]['fcstValue'], 
     maxTemp: filteredFcst[1]['fcstValue'],
+    warning: wrnCode,
   }
+  console.log(dailyForecastDTO)
 
-  const data = await prisma.daily_forecast.create({
-    data: {
-      date: dailyForecastDTO.date,
-      sunset: dailyForecastDTO.sunset,
-      sunrise: dailyForecastDTO.sunrise,
-      minTemp: +dailyForecastDTO.minTemp,
-      maxTemp: +dailyForecastDTO.maxTemp
-    },
-  });
+  // const data = await prisma.daily_forecast.create({
+  //   data: {
+  //     date: dailyForecastDTO.date,
+  //     sunset: dailyForecastDTO.sunset,
+  //     sunrise: dailyForecastDTO.sunrise,
+  //     minTemp: +dailyForecastDTO.minTemp,
+  //     maxTemp: +dailyForecastDTO.maxTemp
+  //   },
+  // });
+
+  const data = 'abc';
 
   return data;
 };
