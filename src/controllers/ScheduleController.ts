@@ -49,7 +49,7 @@ const createHourlyForecast = async (req: Request, res: Response) => {
     //   .send(util.fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
     // }
 
-    return res.status(200).json({ status: 200, message: "하루 예보 저장 성공", data: data });
+    return res.status(200).json({ status: 200, message: "시간 예보 저장 성공", data: data });
 }
 
 export default {

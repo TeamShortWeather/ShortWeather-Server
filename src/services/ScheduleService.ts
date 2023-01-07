@@ -4,9 +4,9 @@ import { DailyForecastDTO } from "../DTO/ScheduleDTO";
 const prisma = new PrismaClient();
 import axios from "axios";
 // import dayjs from "dayjs";
-const moment = require('moment');
-require('moment-timezone');
-moment.tz.setDefault('Asia/Seoul');
+const moment = require("moment");
+require("moment-timezone");
+moment.tz.setDefault("Asia/Seoul");
 moment.suppressDeprecationWarnings = true;
 
 interface Weather {
@@ -242,9 +242,7 @@ const createDailyForecast = async () => {
 };
 
 const createHourlyForecast = async () => {
-  let now = moment();
   const date = moment().format("YYYYMMDD");
-  // const time = now.moment("HH00");
 
   const fcstUrl =
     "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst";
@@ -273,52 +271,33 @@ const createHourlyForecast = async () => {
 
   // 기온, 강수 가져오기
   const fcstFilter = (item) => {
-    const array = ["TMP", "POP"];
+    const array = ["TMP", "POP", "SKY", "PTY"];
     if (array.includes(item.category)) {
       return true;
     }
     return false;
   };
-//객체형태로 저장 date(key값)
+  //객체형태로 저장 date(key값)
   const filteredFcst = fcstData.filter(fcstFilter);
-
-  const arr = [filteredFcst[].baseDate]
-  for(var i = 0, len = filteredFcst.length; i < len; i++){
-    const arr = [filteredFcst[i].baseDate, filteredFcst[i].baseTime, filteredFcst.]
-
-  }
+  console.log(filteredFcst);
   
-
-  var filter = {};
-  var keyArr = [];
-  for(var i = 0, len = filteredFcst.length; i < len; i++){
-    var key = keyArr[i];
-    filter[key] = filteredFcst[i];
+  const arr = [];
+  for (let i = 0; i < filteredFcst.length; i += 4) {
+    const data = {
+      date: filteredFcst[i].fcstDate,
+      time: filteredFcst[i].fcstTime,
+      temperature: +filteredFcst[i].fcstValue,
+      sky: +filteredFcst[i + 1].fcstValue,
+      pty: +filteredFcst[i + 2].fcstValue,
+      rain: +filteredFcst[i + 3].fcstValue,
+    };
+    const d = await prisma.hourly_forecast.create({
+      data,
+    });
+    arr.push(d);
   }
 
-  
-  //array를 time 기준으로 묶고, 거기서 time, date, 날씨, 강수 빼오기
-
-
-  //console.log(filteredFcst.group((time) => time));
-
-  // const hourlyForecastDTO: HourlyForecastDTO = {
-  //   date: date,
-  //   time: time,
-  //   temperature: fcstData[],
-  //   rain: filteredFcst[1]["fcstValue"],
-  // };
-
-  // const createHourlyForecast = await prisma.hourly_forecast.createMany({
-  //   data: {
-  //     date: hourlyForecastDTO.date,
-  //     time: hourlyForecastDTO.time,
-  //     temperature: hourlyForecastDTO.temperature,
-  //     rain: hourlyForecastDTO.rain,
-  //   },
-  // })
-
-  // return createHourlyForecast;
+  return arr;
 };
 
 const observedService = {
