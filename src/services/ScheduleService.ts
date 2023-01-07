@@ -83,7 +83,7 @@ const createObserved = async () => {
     humidity: +ultraSrtNcst[0].obsrValue,
     pm25: +dust.pm25,
     pm10: +dust.pm10,
-    rain: Math.round(+ultraSrtNcst[1].obsrValue)
+    rain: Math.round(+ultraSrtNcst[1].obsrValue),
   };
 
   const result = await prisma.observed_weather.create({ data });
@@ -148,8 +148,8 @@ const createDailyForecast = async () => {
       date: dailyForecastDTO.date,
       sunset: dailyForecastDTO.sunset,
       sunrise: dailyForecastDTO.sunrise,
-      minTemp: +dailyForecastDTO.minTemp,
-      maxTemp: +dailyForecastDTO.maxTemp
+      min_temp: +dailyForecastDTO.minTemp,
+      max_temp: +dailyForecastDTO.maxTemp
     },
   });
 
