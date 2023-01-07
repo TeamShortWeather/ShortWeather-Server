@@ -108,7 +108,7 @@ const createDailyForecast = async () => {
   fcstQueryParams += '&' + encodeURIComponent('dataType') + '=' + encodeURIComponent('JSON'); 
   fcstQueryParams += '&' + encodeURIComponent('base_date') + '=' + encodeURIComponent(date); 
   fcstQueryParams += '&' + encodeURIComponent('base_time') + '=' + encodeURIComponent('0200'); 
-  fcstQueryParams += '&' + encodeURIComponent('nx') + '=' + encodeURIComponent('55'); 
+  fcstQueryParams += '&' + encodeURIComponent('nx') + '=' + encodeURIComponent('60'); 
   fcstQueryParams += '&' + encodeURIComponent('ny') + '=' + encodeURIComponent('127'); 
 
   const wrnUrl = 'http://apis.data.go.kr/1360000/WthrWrnInfoService/getPwnCd';
@@ -116,7 +116,7 @@ const createDailyForecast = async () => {
   wrnQueryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); 
   wrnQueryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('10');
   wrnQueryParams += '&' + encodeURIComponent('dataType') + '=' + encodeURIComponent('JSON'); 
-  wrnQueryParams += '&' + encodeURIComponent('areaCode') + '=' + encodeURIComponent('L1021600'); 
+  wrnQueryParams += '&' + encodeURIComponent('areaCode') + '=' + encodeURIComponent('L1100400'); 
 
   const sunData = (await axios.get(sunUrl+sunQueryParams)).data.response.body.items.item;
   const fcstData = (await axios.get(fcstUrl+fcstQueryParams)).data.response.body.items.item;
@@ -154,19 +154,17 @@ const createDailyForecast = async () => {
     maxTemp: filteredFcst[1]['fcstValue'],
     warning: wrnCode,
   }
-  console.log(dailyForecastDTO)
 
-  // const data = await prisma.daily_forecast.create({
-  //   data: {
-  //     date: dailyForecastDTO.date,
-  //     sunset: dailyForecastDTO.sunset,
-  //     sunrise: dailyForecastDTO.sunrise,
-  //     minTemp: +dailyForecastDTO.minTemp,
-  //     maxTemp: +dailyForecastDTO.maxTemp
-  //   },
-  // });
-
-  const data = 'abc';
+  const data = await prisma.daily_forecast.create({
+    data: {
+      date: dailyForecastDTO.date,
+      sunset: dailyForecastDTO.sunset,
+      sunrise: dailyForecastDTO.sunrise,
+      min_temp: +dailyForecastDTO.minTemp,
+      max_temp: +dailyForecastDTO.maxTemp,
+      warning: dailyForecastDTO.warning,
+    },
+  });
 
   return data;
 };

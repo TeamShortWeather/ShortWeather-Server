@@ -43,12 +43,13 @@ model weather {
 }
 
 model daily_forecast {
-  id      Int     @id(map: "daily_forecast_pk") @unique(map: "daily_forecast_id_uindex") @default(autoincrement())
-  date    String? @db.VarChar(50)
-  sunset  String? @db.VarChar(50)
-  sunrise String? @db.VarChar(50)
-  minTemp Int
-  maxTemp Int
+  id       Int     @id(map: "daily_forecast_pk") @unique(map: "daily_forecast_id_uindex") @default(autoincrement())
+  date     String? @db.VarChar(50)
+  sunset   String? @db.VarChar(50)
+  sunrise  String? @db.VarChar(50)
+  min_temp Int
+  max_temp Int
+  warning  Int?
 }
 
 model observed_weather {
