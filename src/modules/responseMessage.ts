@@ -25,6 +25,9 @@ const message = {
 
   READ_OBSERVED_WEATHER_SUCCESS: '관측 날씨 조회 성공',
   READ_OBSERVED_WEATHER_FAIL: '관측 날씨 조회 실패',
+
+  CREATE_USER_SUCCESS: '유저 정보 입력 성공',
+  CREATE_USER_FAIL: '유저 정보 입력 실패',
 };
 
 export default message;

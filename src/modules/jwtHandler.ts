@@ -9,15 +9,26 @@ const secretKey = process.env.JWT_SECRET;
 const ONE_HOUR = 36000;
 const TWO_WEEK = ONE_HOUR * 24 * 14;
 
-const sign = user => {
+// const sign = user => {
+//   const payload = {
+//     user: {
+//       id: user,
+//     },
+//   };
+
+//   const token = jwt.sign(payload, config.jwtSecret, { expiresIn: '14d' });
+//   return token;
+// };
+
+//* 받아온 userId를 담는 access token 생성
+const sign = (userId: number) => {
   const payload = {
-    user: {
-      id: user,
-    },
+    userId,
   };
 
-  const token = jwt.sign(payload, config.jwtSecret, { expiresIn: '14d' });
-  return token;
+  //! 기간을 어느 정도로 할지!
+  const accessToken = jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: "10d" });
+  return accessToken;
 };
 
 const createRefresh = user => {
@@ -103,6 +114,26 @@ const getRefreshToken = async (code): Promise<string> => {
     console.log(error);
   }
 };
+
+
+// //* token 검사!
+// const verify = (token: string) => {
+//   let decoded: string | jwt.JwtPayload;
+
+//   try {
+//     decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+//   } catch (error: any) {
+//     if (error.message === "jwt expired") {
+//       return tokenType.TOKEN_EXPIRED;
+//     } else if (error.message === "invalid token") {
+//       return tokenType.TOKEN_INVALID;
+//     } else {
+//       return tokenType.TOKEN_INVALID;
+//     }
+//   }
+
+//   return decoded;
+// };
 
 //token 검증
 const verify = token => {
