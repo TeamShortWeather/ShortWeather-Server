@@ -13,7 +13,7 @@ interface Weather {
   obsrValue: number
 };
 
-//* 현황 조회
+//* 관측 날씨 저장
 const createObserved = async () => {
   let now = dayjs();
   if (now.get('m') < 40) {
@@ -83,7 +83,7 @@ const createObserved = async () => {
     humidity: +ultraSrtNcst[0].obsrValue,
     pm25: +dust.pm25,
     pm10: +dust.pm10,
-    rain: +ultraSrtNcst[1].obsrValue
+    rain: Math.round(+ultraSrtNcst[1].obsrValue)
   };
 
   const result = await prisma.observed_weather.create({ data });
