@@ -9,15 +9,25 @@ const secretKey = process.env.JWT_SECRET;
 const ONE_HOUR = 36000;
 const TWO_WEEK = ONE_HOUR * 24 * 14;
 
-const sign = user => {
+// const sign = user => {
+//   const payload = {
+//     user: {
+//       id: user,
+//     },
+//   };
+
+//   const token = jwt.sign(payload, config.jwtSecret, { expiresIn: '14d' });
+//   return token;
+// };
+
+//* 받아온 userId를 담는 access token 생성
+const sign = (userId: number) => {
   const payload = {
-    user: {
-      id: user,
-    },
+    userId,
   };
 
-  const token = jwt.sign(payload, config.jwtSecret, { expiresIn: '14d' });
-  return token;
+  const accessToken = jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: "1d" });
+  return accessToken;
 };
 
 const createRefresh = user => {
@@ -104,26 +114,46 @@ const getRefreshToken = async (code): Promise<string> => {
   }
 };
 
-//token 검증
-const verify = token => {
-  let decode;
+
+//* token 검사!
+const verify = (token: string) => {
+  let decoded: string | jwt.JwtPayload;
+
   try {
-    decode = jwt.verify(token, secretKey);
-  } catch (error) {
-    if (error.message === 'jwt expired') {
-      console.log('만료된 토큰입니다.');
+    decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+  } catch (error: any) {
+    if (error.message === "jwt expired") {
       return TOKEN_EXPIRED;
-    } else if (error.message === 'invalid signature') {
-      console.log('유효하지 않은 토큰입니다.');
+    } else if (error.message === "invalid token") {
       return TOKEN_INVALID;
     } else {
-      console.log(error.message);
-      return 9999;
+      return TOKEN_INVALID;
     }
   }
-  // 해독이나 인증이 완료되면, 해독된 상태의 JWT 반환
-  return decode;
+
+  return decoded;
 };
+
+// //token 검증
+// const verify = token => {
+//   let decode;
+//   try {
+//     decode = jwt.verify(token, secretKey);
+//   } catch (error) {
+//     if (error.message === 'jwt expired') {
+//       console.log('만료된 토큰입니다.');
+//       return TOKEN_EXPIRED;
+//     } else if (error.message === 'invalid signature') {
+//       console.log('유효하지 않은 토큰입니다.');
+//       return TOKEN_INVALID;
+//     } else {
+//       console.log(error.message);
+//       return 9999;
+//     }
+//   }
+//   // 해독이나 인증이 완료되면, 해독된 상태의 JWT 반환
+//   return decode;
+// };
 
 const verifyAndRenewalToken = token => {
   let decoded;

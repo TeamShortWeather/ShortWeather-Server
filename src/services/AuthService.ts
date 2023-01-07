@@ -1,6 +1,37 @@
-import { changeUserDTO, createDeviceDTO, userInputDTO } from '../DTO/AuthDTO';
+import { changeUserDTO, createDeviceDTO, userInputDTO, UserCreateDTO } from '../DTO/AuthDTO';
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 const convertSnakeToCamel = require('../modules/convertSnakeToCamel');
 
+const createUser = async (userCreateDto: UserCreateDTO) => {
+  const data = await prisma.user.create({
+    data: {
+      gender: userCreateDto.gender,
+      temp_sens: userCreateDto.tempSens,
+      wake_up_time: userCreateDto.wakeUpTime,
+      go_out_time: userCreateDto.goOutTime,
+      go_home_time: userCreateDto.goHomeTime,
+      fcm_token: null,
+      device_token: userCreateDto.deviceToken,
+      age: userCreateDto.age,
+    },
+  });
+
+  return data;
+};
+
+//* 유저 등록 조회
+const getUserByDevice = async (deviceToken: string) => {
+  const data = await prisma.user.findFirst({
+    where: {
+      device_token: deviceToken
+    }
+  });
+
+  return data;
+};
+
+/*
 const findUserByEmail = async (client: any, email: string, socialType: string) => {
   const { rows } = await client.query(
     `
@@ -25,17 +56,17 @@ const findUserBySocialId = async (client: any, socialId: string) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const createUser = async (client: any, data: userInputDTO) => {
-  const { rows } = await client.query(
-    `
-        INSERT INTO "user"(name, email, social_type, fcm_token, social_id)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING *
-        `,
-    [data.name, data.email, data.socialType, data.fcmToken, data.socialId],
-  );
-  return convertSnakeToCamel.keysToCamel(rows[0]);
-};
+// const createUser = async (client: any, data: userInputDTO) => {
+//   const { rows } = await client.query(
+//     `
+//         INSERT INTO "user"(name, email, social_type, fcm_token, social_id)
+//         VALUES ($1, $2, $3, $4, $5)
+//         RETURNING *
+//         `,
+//     [data.name, data.email, data.socialType, data.fcmToken, data.socialId],
+//   );
+//   return convertSnakeToCamel.keysToCamel(rows[0]);
+// };
 
 const updateFcm = async (client: any, fcm: string, userId: number) => {
   const { rows } = await client.query(
@@ -214,4 +245,10 @@ export default {
   getUserById,
   getUserByRfToken,
   findUserBySocialId,
+};
+*/
+
+export default {
+  createUser,
+  getUserByDevice,
 };
