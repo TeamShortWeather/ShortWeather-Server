@@ -3,7 +3,6 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 const convertSnakeToCamel = require('../modules/convertSnakeToCamel');
 
-
 const createUser = async (userCreateDto: UserCreateDTO) => {
   const data = await prisma.user.create({
     data: {
@@ -16,6 +15,17 @@ const createUser = async (userCreateDto: UserCreateDTO) => {
       device_token: userCreateDto.deviceToken,
       age: userCreateDto.age,
     },
+  });
+
+  return data;
+};
+
+//* 유저 등록 조회
+const getUserByDevice = async (deviceToken: string) => {
+  const data = await prisma.user.findFirst({
+    where: {
+      device_token: deviceToken
+    }
   });
 
   return data;
@@ -240,4 +250,5 @@ export default {
 
 export default {
   createUser,
+  getUserByDevice,
 };
