@@ -12,12 +12,16 @@ import util from "../modules/util"
  *  @developer 강수현
  */
 const createObserved = async (req: Request, res: Response) => {
+  try {
+    const data = await ScheduleService.createObserved();
 
-  const data = await ScheduleService.createObserved();
-
-  if (!data) return res.status(sc.BAD_REQUEST).send(util.fail(sc.BAD_REQUEST, rm.READ_OBSERVED_WEATHER_FAIL));
-
-  return res.status(sc.OK).send(util.success(sc.OK, rm.READ_OBSERVED_WEATHER_SUCCESS, data));
+    if (!data) return res.status(sc.BAD_REQUEST).send(util.fail(sc.BAD_REQUEST, rm.READ_OBSERVED_WEATHER_FAIL));
+  
+    return res.status(sc.OK).send(util.success(sc.OK, rm.READ_OBSERVED_WEATHER_SUCCESS, data));
+  }catch(error) {
+    console.log(error);
+    res.status(sc.INTERNAL_SERVER_ERROR).send(util.fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
 };
 
 /**

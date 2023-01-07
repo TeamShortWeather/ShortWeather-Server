@@ -97,8 +97,8 @@ const createObserved = async () => {
     "&" + encodeURIComponent("ver") + "=" + encodeURIComponent("1.3"); /* */
 
   function filter(item: Weather) {
-    //* REH - 습도, RN1 - 강수, T1H - 기온
-    const array = ["T1H", "RN1", "REH"];
+    //* REH - 습도, RN1 - 강수, T1H - 기온, WSD - 풍속
+    const array = ["T1H", "RN1", "REH", 'WSD'];
     if (array.includes(item.category)) {
       return true;
     }
@@ -108,43 +108,46 @@ const createObserved = async () => {
   let ultraSrtNcst;
   let dust;
 
-  await axios
-    .all([
-      axios.get(ultraSrtNcstUrl + queryParams),
-      axios.get(dustUrl + dustQueryParams),
-    ])
-    .then(
-      axios.spread((ncstResult, dustResult) => {
-        const ncstJson = ncstResult.data.response.body.items.item;
-        const filtered = ncstJson.filter(filter);
-        const value = filtered.map((element: Weather) => {
-          return { category: element.category, obsrValue: element.obsrValue };
-        });
-        ultraSrtNcst = value;
+  await axios.all([axios.get(ultraSrtNcstUrl + queryParams), axios.get(dustUrl + dustQueryParams)])
+    .then(axios.spread((ncstResult, dustResult) => {
+      const ncstJson = ncstResult.data.response.body.items.item;
+      const filtered = ncstJson.filter(filter);
+      const value = filtered.map((element: Weather) => {
+        return { category: element.category, obsrValue: element.obsrValue };
+      });
+      ultraSrtNcst = value;
 
-        const dustJson = dustResult.data.response.body.items;
-        dust = { pm25: dustJson[0].pm25Grade1h, pm10: dustJson[0].pm10Grade1h };
-      })
-    )
+      const dustJson = dustResult.data.response.body.items;
+      dust = { pm25: dustJson[0].pm25Grade1h, pm10: dustJson[0].pm10Grade1h };
+    }))
     .catch((err) => console.log(err));
 
   if (ultraSrtNcst == undefined || dust == undefined) return null;
 
-  const realTime = moment().format("HH:00");
-  const realDate = moment().format("YYYYMMDD");
+  const temp = +ultraSrtNcst[2].obsrValue;
+  const wind = +ultraSrtNcst[3].obsrValue;
+  let sensTemp = temp;
+  //! 체감 온도 수정 예정
+  // if (dayjs().get("M") >= 5 && dayjs().get("M") >= 9) {
+  //   //* 여름 체감 온도 계산 api 호출
+  //   //sensTemp = await axios.get(ultraSrtNcstUrl + queryParams);
+  // } else if (temp <= 10 && wind >= 1.3) { //! ^ 제대로 되는지 확인 -> Math
+  //   sensTemp = 13.12 + 0.6215 * temp - 11.37 * wind ^ 0.16 + 0.3965 * wind ^ 0.16 * temp;
+  // }
 
   const data = {
-    date: realDate,
-    time: realTime,
-    temperature: Math.floor(+ultraSrtNcst[2].obsrValue),
+    date: moment().format("YYYYMMDD"),
+    time: moment().format("HH00"),
+    temperature: Math.floor(temp),
     humidity: +ultraSrtNcst[0].obsrValue,
     pm25: +dust.pm25,
     pm10: +dust.pm10,
     rain: Math.round(+ultraSrtNcst[1].obsrValue),
+    sensory_temperature: Math.floor(sensTemp), //! type 수정 예정
   };
 
   const result = await prisma.observed_weather.create({ data });
-  console.log("result", result);
+  //console.log("result", result);
 
   return result;
 };
