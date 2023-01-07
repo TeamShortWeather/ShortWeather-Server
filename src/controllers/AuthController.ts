@@ -3,7 +3,6 @@ import statusCode from "../modules/statusCode";
 import util from "../modules/util";
 import message from "../modules/responseMessage";
 import AuthService from "../services/AuthService";
-const db = require("../loaders/db");
 import jwtHandler from "../modules/jwtHandler";
 import { UserCreateDTO } from "../DTO/AuthDTO";
 import { validationResult } from "express-validator";
@@ -18,28 +17,34 @@ const createUser = async (req: Request, res: Response) => {
   }
 
   const userCreateDto: UserCreateDTO = req.body;
-  const data = await AuthService.createUser(userCreateDto);
 
-  if (!data) {
-    return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, message.CREATE_USER_FAIL))
+  try {
+    const data = await AuthService.createUser(userCreateDto);
+
+    if (!data) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, message.CREATE_USER_FAIL))
+    }
+
+    //? jwtHandler 내 sign 함수를 이용해 accessToken 생성
+    const accessToken = jwtHandler.sign(data.id);
+
+    const result = {
+      id: data.id,
+      gender: data.gender,
+      age: data.age,
+      tempSens: data.temp_sens,
+      wakeUpTime: data.wake_up_time,
+      goOutTime: data.go_out_time,
+      goHomeTime: data.go_home_time,
+      deviceToken: data.device_token,
+      accessToken: accessToken,
+    };
+
+    return res.status(statusCode.CREATED).send(util.success(statusCode.CREATED, message.CREATE_USER_SUCCESS, result));
+  } catch (error) {
+    console.log(error);
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, message.INTERNAL_SERVER_ERROR));
   }
-
-  //? jwtHandler 내 sign 함수를 이용해 accessToken 생성
-  const accessToken = jwtHandler.sign(data.id);
-
-  const result = {
-    id: data.id,
-    gender: data.gender,
-    age: data.age,
-    tempSens: data.temp_sens,
-    wakeUpTime: data.wake_up_time,
-    goOutTime: data.go_out_time,
-    goHomeTime: data.go_home_time,
-    deviceToken: data.device_token,
-    accessToken: accessToken,
-  };
-
-  return res.status(statusCode.CREATED).send(util.success(statusCode.CREATED, message.CREATE_USER_SUCCESS, result));
 };
 
 //* 유저 등록 조회
