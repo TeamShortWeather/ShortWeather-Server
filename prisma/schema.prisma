@@ -21,6 +21,7 @@ model user {
   created_at   DateTime? @default(now()) @db.Timestamp(6)
   updated_at   DateTime? @default(now()) @db.Timestamp(6)
   gender       String    @db.VarChar(20)
+  age          String    @db.VarChar(30)
   temp_sens    String    @db.VarChar(100)
   wake_up_time String    @db.VarChar(30)
   go_out_time  String    @db.VarChar(30)
@@ -43,12 +44,13 @@ model weather {
 }
 
 model daily_forecast {
-  id      Int     @id(map: "daily_forecast_pk") @unique(map: "daily_forecast_id_uindex") @default(autoincrement())
-  date    String? @db.VarChar(50)
-  sunset  String? @db.VarChar(50)
-  sunrise String? @db.VarChar(50)
-  minTemp Int
-  maxTemp Int
+  id       Int     @id(map: "daily_forecast_pk") @unique(map: "daily_forecast_id_uindex") @default(autoincrement())
+  date     String? @db.VarChar(50)
+  sunset   String? @db.VarChar(50)
+  sunrise  String? @db.VarChar(50)
+  min_temp Int
+  max_temp Int
+  warning  Int?
 }
 
 model observed_weather {
