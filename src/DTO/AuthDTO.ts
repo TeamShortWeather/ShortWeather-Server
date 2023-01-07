@@ -8,6 +8,17 @@ export interface IUserInputDTO {
   email: string;
 }
 
+//* 유저 정보 입력
+export interface UserCreateDTO {
+  gender: string;
+  age: string;
+  tempSens: string;
+  wakeUpTime: string;
+  goOutTime: string;
+  goHomeTime: string;
+  deviceToken: string;
+}
+
 export interface userInputDTO {
   name: string;
   email: string;
