@@ -14,6 +14,8 @@ model hourly_forecast {
   temperature Int?
   pm25        Int?
   rain        Int?
+  sky         Int?
+  pty         Int?
 }
 
 model user {
