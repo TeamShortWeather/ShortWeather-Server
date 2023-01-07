@@ -12,8 +12,9 @@ model hourly_forecast {
   date        String? @db.VarChar(20)
   time        String? @db.VarChar(20)
   temperature Int?
-  pm25        Int?
   rain        Int?
+  sky         Int?
+  pty         Int?
 }
 
 model user {
