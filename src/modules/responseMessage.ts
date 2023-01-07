@@ -30,6 +30,9 @@ const message = {
   CREATE_USER_FAIL: '유저 정보 입력 실패',
   READ_USER_SUCCESS: '유저 등록 조회 성공',
   READ_USER_UNAUTHORIZED: '등록되지 않은 유저입니다.',
+
+  READ_TODAY_WEATHER_SUCCESS: '오늘 날씨 정보 조회 성공',
+  READ_TODAY_WEATHER_FAIL: '오늘 날씨 정보 조회 실패',
 };
 
 export default message;
