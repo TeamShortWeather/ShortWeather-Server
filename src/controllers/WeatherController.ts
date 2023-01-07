@@ -12,8 +12,8 @@ const getWeatherDetail = async (req: Request, res: Response) => {
     return res.status(sc.OK).send(util.success(sc.OK, rm.READ_OBSERVED_WEATHER_SUCCESS, data));
 };
 
-const getDustForecast = async (req: Request, res: Response) => {
-    const data = await WeatherService.getDustForecast();
+const getTempForecast = async (req: Request, res: Response) => {
+    const data = await WeatherService.getTempForecast();
 
     if (!data) return res.status(sc.BAD_REQUEST).send(util.fail(sc.BAD_REQUEST, rm.READ_OBSERVED_WEATHER_FAIL));
 
@@ -30,7 +30,7 @@ const getRainForecast = async (req: Request, res: Response) => {
 
 export default {
     getWeatherDetail,
-    getDustForecast,
+    getTempForecast,
     getRainForecast
 };
   

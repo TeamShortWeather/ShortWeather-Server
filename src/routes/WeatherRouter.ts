@@ -4,5 +4,6 @@ import WeatherController from '../controllers/WeatherController';
 const router = Router();
 
 router.get('/today/detail', WeatherController.getWeatherDetail);
+router.get('/today/detail/temp', WeatherController.getTempForecast);
 
 export default router;
