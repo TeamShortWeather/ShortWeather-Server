@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { WeatherInfoDTO } from '../DTO/WeatherDTO';
 import dayjs from "dayjs";
+import { database } from "firebase-admin";
 
 const prisma = new PrismaClient();
 
@@ -37,16 +38,36 @@ const getWeatherDetail = async () => {
     return data;
 };
 
-const getDustForecast = async () => {
-    const result = await prisma.hourly_forecast.findMany({
+const getTempForecast = async () => {
+    const start = await prisma.hourly_forecast.findFirst({
         where: {
           date: date,
           time: time,
         },
+        select: {
+            id: true,
+        },
     })
-    const data = {}
-    
-    return data;
+
+    const result = await prisma.hourly_forecast.findMany({
+        where: {
+          id: {
+            gt: start.id-1,
+          }
+        },
+        select: {
+            id: true,
+            date: true,
+            time: true,
+            temperature: true,
+            sky: true,
+            pty: true,
+        },
+        take: 24,
+    })
+
+    console.log(result.length)
+    return result;
 };
 
 const getRainForecast = async () => {
@@ -58,7 +79,7 @@ const getRainForecast = async () => {
 
 const WeatherService = {
     getWeatherDetail,
-    getDustForecast,
+    getTempForecast,
     getRainForecast
 }
   

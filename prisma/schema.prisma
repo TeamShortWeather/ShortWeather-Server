@@ -12,8 +12,9 @@ model hourly_forecast {
   date        String? @db.VarChar(20)
   time        String? @db.VarChar(20)
   temperature Int?
-  pm25        Int?
   rain        Int?
+  sky         Int?
+  pty         Int?
 }
 
 model user {
@@ -28,6 +29,7 @@ model user {
   is_deleted   Boolean?  @default(false)
   fcm_token    String?   @db.VarChar(255)
   device_token String    @db.VarChar(500)
+  age          String    @db.VarChar(30)
 }
 
 model weather {
@@ -53,12 +55,13 @@ model daily_forecast {
 }
 
 model observed_weather {
-  id          Int     @id(map: "observedWeather_pkey") @default(autoincrement())
-  date        String? @db.VarChar(50)
-  time        String? @db.VarChar(50)
-  temperature Int?
-  humidity    Int?
-  pm25        Int?
-  pm10        Int?
-  rain        Int?
+  id                  Int     @id(map: "observedWeather_pkey") @default(autoincrement())
+  date                String? @db.VarChar(50)
+  time                String? @db.VarChar(50)
+  temperature         Int?
+  humidity            Int?
+  pm25                Int?
+  pm10                Int?
+  rain                Int?
+  sensory_temperature Int?
 }
