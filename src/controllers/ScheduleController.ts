@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import ScheduleService from "../services/ScheduleService";
 import sc from "../modules/statusCode";
 import rm from "../modules/responseMessage";
-import util from "../modules/util"
+import util from "../modules/util";
 
 /**
  *  @route POST /schedule/observed
@@ -15,12 +15,19 @@ const createObserved = async (req: Request, res: Response) => {
   try {
     const data = await ScheduleService.createObserved();
 
-    if (!data) return res.status(sc.BAD_REQUEST).send(util.fail(sc.BAD_REQUEST, rm.READ_OBSERVED_WEATHER_FAIL));
-  
-    return res.status(sc.OK).send(util.success(sc.OK, rm.READ_OBSERVED_WEATHER_SUCCESS, data));
-  }catch(error) {
+    if (!data)
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(util.fail(sc.BAD_REQUEST, rm.READ_OBSERVED_WEATHER_FAIL));
+
+    return res
+      .status(sc.OK)
+      .send(util.success(sc.OK, rm.READ_OBSERVED_WEATHER_SUCCESS, data));
+  } catch (error) {
     console.log(error);
-    res.status(sc.INTERNAL_SERVER_ERROR).send(util.fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+    res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(util.fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 };
 
@@ -34,7 +41,9 @@ const createObserved = async (req: Request, res: Response) => {
 const createDailyForecast = async (req: Request, res: Response) => {
   const data = await ScheduleService.createDailyForecast();
 
-  return res.status(200).json({ status: 200, message: "하루 예보 저장 성공", data: data });
+  return res
+    .status(200)
+    .json({ status: 200, message: "하루 예보 저장 성공", data: data });
 };
 
 /**
@@ -45,19 +54,21 @@ const createDailyForecast = async (req: Request, res: Response) => {
  *  @developer 김민욱
  */
 const createHourlyForecast = async (req: Request, res: Response) => {
-    const data = await ScheduleService.createHourlyForecast();
+  const data = await ScheduleService.createHourlyForecast();
 
-    // if (!data){
-    //     return res
-    //   .status(sc.BAD_REQUEST)
-    //   .send(util.fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
-    // }
+  if (!data) {
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(util.fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+  }
 
-    return res.status(200).json({ status: 200, message: "시간 예보 저장 성공", data: data });
-}
+  return res
+    .status(200)
+    .json({ status: 200, message: "시간 예보 저장 성공", data: data });
+};
 
 export default {
   createObserved,
   createDailyForecast,
-  createHourlyForecast
+  createHourlyForecast,
 };
