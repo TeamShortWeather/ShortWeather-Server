@@ -5,6 +5,6 @@ const router = Router();
 
 router.get('/today/detail', WeatherController.getWeatherDetail);
 router.get('/today/detail/temp', WeatherController.getTempForecast);
-router.get("/today/detail/rain", WeatherController.getRain);
+router.get("/today/detail/rain", WeatherController.getRainForecast);
 
 export default router;

@@ -11,14 +11,15 @@ import WeatherService from "../services/WeatherService";
  *  @description 시간대별 날씨 - 강수 조회
  *  @developer 김민욱
  */
-const getRain = async (req: Request, res: Response) => {
+const getRainForecast = async (req: Request, res: Response) => {
   try {
     const data = await WeatherService.getRainForecast();
 
-    if (!data)
+    if (!data) {
       return res
         .status(sc.BAD_REQUEST)
         .send(util.fail(sc.BAD_REQUEST, rm.READ_OBSERVED_WEATHER_FAIL));
+    }
 
     return res
       .status(sc.OK)
@@ -32,10 +33,10 @@ const getRain = async (req: Request, res: Response) => {
 };
 
 /**
- *  @route GET /weather/today/detail/rain
- *  @desc Get Schedule
+ *  @route GET /weather/today/detail
+ *  @desc Get Weather
  *  @access public
- *  @description 시간대별 날씨 - 강수 조회
+ *  @description 날씨 디테일
  *  @developer 김도연
  */
 const getWeatherDetail = async (req: Request, res: Response) => {
@@ -51,6 +52,13 @@ const getWeatherDetail = async (req: Request, res: Response) => {
     .send(util.success(sc.OK, rm.READ_OBSERVED_WEATHER_SUCCESS, data));
 };
 
+/**
+ *  @route GET /weather/today/detail/temp
+ *  @desc Get Weather
+ *  @access public
+ *  @description 시간대별 날씨 온도 조회
+ *  @developer 김도연
+ */
 const getTempForecast = async (req: Request, res: Response) => {
   const data = await WeatherService.getTempForecast();
 
@@ -64,21 +72,7 @@ const getTempForecast = async (req: Request, res: Response) => {
     .send(util.success(sc.OK, rm.READ_OBSERVED_WEATHER_SUCCESS, data));
 };
 
-const getRainForecast = async (req: Request, res: Response) => {
-  const data = await WeatherService.getRainForecast();
-
-  if (!data)
-    return res
-      .status(sc.BAD_REQUEST)
-      .send(util.fail(sc.BAD_REQUEST, rm.READ_OBSERVED_WEATHER_FAIL));
-
-  return res
-    .status(sc.OK)
-    .send(util.success(sc.OK, rm.READ_OBSERVED_WEATHER_SUCCESS, data));
-};
-
 export default {
-  getRain,
   getWeatherDetail,
   getTempForecast,
   getRainForecast,

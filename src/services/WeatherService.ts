@@ -10,7 +10,6 @@ let date = now.format("YYYYMMDD");
 let time = now.format("HH00");
 
 const getRainForecast = async () => {
-
   const start = await prisma.hourly_forecast.findFirst({
     where: {
       date: date,
