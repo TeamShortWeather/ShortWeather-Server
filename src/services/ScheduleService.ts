@@ -1,13 +1,15 @@
 import { HourlyForecastDTO } from "./../DTO/ScheduleDTO";
 import { PrismaClient } from "@prisma/client";
 import { DailyForecastDTO } from "../DTO/ScheduleDTO";
-const prisma = new PrismaClient();
 import axios from "axios";
+
 // import dayjs from "dayjs";
 const moment = require("moment");
 require("moment-timezone");
 moment.tz.setDefault("Asia/Seoul");
 moment.suppressDeprecationWarnings = true;
+
+const prisma = new PrismaClient();
 
 interface Weather {
   baseDate: string;
@@ -155,63 +157,44 @@ const createObserved = async () => {
 const createDailyForecast = async () => {
   const date = moment().format("YYYYMMDD");
 
-  const sunUrl =
-    "http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getAreaRiseSetInfo";
-  let sunQueryParams =
-    "?" +
-    encodeURIComponent("serviceKey") +
-    "=" +
-    `${process.env.WEATHER_SERVICE_KEY}`; /* Service Key*/
-  sunQueryParams +=
-    "&" + encodeURIComponent("locdate") + "=" + encodeURIComponent(date);
-  sunQueryParams +=
-    "&" + encodeURIComponent("location") + "=" + encodeURIComponent("서울");
+  const sunUrl = 'http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getAreaRiseSetInfo';
+  let sunQueryParams = '?' + encodeURIComponent('serviceKey') + '=vIpsf9%2FsPoI5izpvvyzFGPI7SPyElJCB43d%2BwRQeygk%2FSbl%2Bg%2Fz9y8wWyZpZ2jeUOw6kXEURYdAg%2BZMEfpNH6Q%3D%3D'; /* Service Key*/
+  sunQueryParams += '&' + encodeURIComponent('locdate') + '=' + encodeURIComponent(date); 
+  sunQueryParams += '&' + encodeURIComponent('location') + '=' + encodeURIComponent('서울'); 
+  
+  const fcstUrl = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst';
+  let fcstQueryParams = '?' + encodeURIComponent('serviceKey') + '=vIpsf9%2FsPoI5izpvvyzFGPI7SPyElJCB43d%2BwRQeygk%2FSbl%2Bg%2Fz9y8wWyZpZ2jeUOw6kXEURYdAg%2BZMEfpNH6Q%3D%3D'; /* Service Key*/
+  fcstQueryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); 
+  fcstQueryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('1000'); 
+  fcstQueryParams += '&' + encodeURIComponent('dataType') + '=' + encodeURIComponent('JSON'); 
+  fcstQueryParams += '&' + encodeURIComponent('base_date') + '=' + encodeURIComponent(date); 
+  fcstQueryParams += '&' + encodeURIComponent('base_time') + '=' + encodeURIComponent('0200'); 
+  fcstQueryParams += '&' + encodeURIComponent('nx') + '=' + encodeURIComponent('60'); 
+  fcstQueryParams += '&' + encodeURIComponent('ny') + '=' + encodeURIComponent('127'); 
 
-  const fcstUrl =
-    "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst";
-  let fcstQueryParams =
-    "?" +
-    encodeURIComponent("serviceKey") +
-    "=" +
-    `${process.env.WEATHER_SERVICE_KEY}`; /* Service Key*/
-  fcstQueryParams +=
-    "&" + encodeURIComponent("pageNo") + "=" + encodeURIComponent("1");
-  fcstQueryParams +=
-    "&" + encodeURIComponent("numOfRows") + "=" + encodeURIComponent("1000");
-  fcstQueryParams +=
-    "&" + encodeURIComponent("dataType") + "=" + encodeURIComponent("JSON");
-  fcstQueryParams +=
-    "&" + encodeURIComponent("base_date") + "=" + encodeURIComponent(date);
-  fcstQueryParams +=
-    "&" + encodeURIComponent("base_time") + "=" + encodeURIComponent("0200");
-  fcstQueryParams +=
-    "&" + encodeURIComponent("nx") + "=" + encodeURIComponent("55");
-  fcstQueryParams +=
-    "&" + encodeURIComponent("ny") + "=" + encodeURIComponent("127");
+  const wrnUrl = 'http://apis.data.go.kr/1360000/WthrWrnInfoService/getPwnCd';
+  let wrnQueryParams = '?' + encodeURIComponent('serviceKey') + '=vIpsf9%2FsPoI5izpvvyzFGPI7SPyElJCB43d%2BwRQeygk%2FSbl%2Bg%2Fz9y8wWyZpZ2jeUOw6kXEURYdAg%2BZMEfpNH6Q%3D%3D'; /* Service Key*/
+  wrnQueryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); 
+  wrnQueryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('10');
+  wrnQueryParams += '&' + encodeURIComponent('dataType') + '=' + encodeURIComponent('JSON'); 
+  wrnQueryParams += '&' + encodeURIComponent('areaCode') + '=' + encodeURIComponent('L1100400'); 
 
-  const wrnUrl = "http://apis.data.go.kr/1360000/WthrWrnInfoService/getPwnCd";
-  let wrnQueryParams =
-    "?" +
-    encodeURIComponent("serviceKey") +
-    "=" +
-    `${process.env.WEATHER_SERVICE_KEY}`; /* Service Key*/
-  wrnQueryParams +=
-    "&" + encodeURIComponent("pageNo") + "=" + encodeURIComponent("1");
-  wrnQueryParams +=
-    "&" + encodeURIComponent("numOfRows") + "=" + encodeURIComponent("10");
-  wrnQueryParams +=
-    "&" + encodeURIComponent("dataType") + "=" + encodeURIComponent("JSON");
-  wrnQueryParams +=
-    "&" + encodeURIComponent("areaCode") + "=" + encodeURIComponent("L1100400");
+  const sunData = (await axios.get(sunUrl+sunQueryParams)).data.response.body.items.item;
+  const fcstData = (await axios.get(fcstUrl+fcstQueryParams)).data.response.body.items.item;
+  const wrnRes = (await axios.get(wrnUrl+wrnQueryParams)).data.response;
 
-  const sunData = (await axios.get(sunUrl + sunQueryParams)).data.response.body
-    .items.item;
-  const fcstData = (await axios.get(fcstUrl + fcstQueryParams)).data.response
-    .body.items.item;
-  const wrnData = (await axios.get(wrnUrl + wrnQueryParams)).data.response;
+  const wrnArr = [8, 5, 7, 2, 3, 12, 1, 6, 9, 4]
+  let wrnCode = null
 
-  if (wrnData.header.resultCode != "03") {
-    console.log(3456);
+  if (wrnRes.header.resultCode!='03') {
+      const wrnData = wrnRes.body.items.item;
+
+      const indexArr = wrnData.map((element) => {
+          return wrnArr.indexOf(element.warnVar);
+      })
+
+      const minIndex = (indexArr.indexOf(Math.min(...indexArr)));
+      wrnCode = wrnData[indexArr[minIndex]].warnVar;
   }
 
   const fcstFilter = (item) => {
@@ -226,10 +209,11 @@ const createDailyForecast = async () => {
 
   const dailyForecastDTO: DailyForecastDTO = {
     date: date,
-    sunrise: sunData["sunrise"].trim(),
-    sunset: sunData["sunset"].trim(),
-    minTemp: filteredFcst[0]["fcstValue"],
-    maxTemp: filteredFcst[1]["fcstValue"],
+    sunrise: sunData['sunrise'].trim(),
+    sunset: sunData['sunset'].trim(),
+    minTemp: filteredFcst[0]['fcstValue'], 
+    maxTemp: filteredFcst[1]['fcstValue'],
+    warning: wrnCode,
   };
 
   const data = await prisma.daily_forecast.create({
@@ -238,7 +222,8 @@ const createDailyForecast = async () => {
       sunset: dailyForecastDTO.sunset,
       sunrise: dailyForecastDTO.sunrise,
       min_temp: +dailyForecastDTO.minTemp,
-      max_temp: +dailyForecastDTO.maxTemp
+      max_temp: +dailyForecastDTO.maxTemp,
+      warning: dailyForecastDTO.warning,
     },
   });
 

@@ -1,9 +1,10 @@
 export interface DailyForecastDTO {
-  date: string;
-  sunset: string;
-  sunrise: string;
-  minTemp: string;
-  maxTemp: string;
+    date: string,
+    sunset: string,
+    sunrise: string,
+    minTemp: string,
+    maxTemp: string,
+    warning: number,
 }
 
 export interface HourlyForecastDTO {
