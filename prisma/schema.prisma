@@ -65,3 +65,15 @@ model observed_weather {
   rain                Int?
   sensory_temperature Int?
 }
+
+model today_message {
+  id      Int    @id @default(autoincrement())
+  warning Int
+  message String @db.VarChar(255)
+}
+
+model yesterday_message {
+  id      Int    @id @default(autoincrement())
+  warning Int
+  message String @db.VarChar(255)
+}
