@@ -5,6 +5,26 @@ import util from "../modules/util";
 import WeatherService from "../services/WeatherService";
 
 /**
+ *  @route GET /weather/today
+ *  @desc Get Schedule
+ *  @access public
+ *  @description 오늘 날씨 정보 조회
+ *  @developer 강수현
+ */
+const getTodayWeather = async (req: Request, res: Response) => {
+    try {
+        const data = await WeatherService.getTodayWeather();
+        if (!data) {
+            return res.status(sc.BAD_REQUEST).send(util.fail(sc.BAD_REQUEST, rm.READ_TODAY_WEATHER_FAIL))
+        }
+        return res.status(sc.OK).send(util.success(sc.OK, rm.READ_TODAY_WEATHER_SUCCESS, data));
+    } catch (error) {
+        console.log(error);
+        res.status(sc.INTERNAL_SERVER_ERROR).send(util.fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+    }
+};
+
+/**
  *  @route GET /weather/today/detail/rain
  *  @desc Get Schedule
  *  @access public
@@ -73,7 +93,8 @@ const getTempForecast = async (req: Request, res: Response) => {
 };
 
 export default {
-  getWeatherDetail,
-  getTempForecast,
-  getRainForecast,
+    getTodayWeather,
+    getWeatherDetail,
+    getTempForecast,
+    getRainForecast,
 };
