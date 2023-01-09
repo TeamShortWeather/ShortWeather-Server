@@ -79,3 +79,15 @@ model yesterday_message {
   warning Int
   message String @db.VarChar(255)
 }
+
+model today_message {
+  id      Int    @id @default(autoincrement())
+  warning Int
+  message String @db.VarChar(255)
+}
+
+model yesterday_message {
+  id      Int    @id @default(autoincrement())
+  warning Int
+  message String @db.VarChar(255)
+}

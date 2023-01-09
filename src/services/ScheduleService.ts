@@ -3,7 +3,6 @@ import { PrismaClient } from "@prisma/client";
 import { DailyForecastDTO } from "../DTO/ScheduleDTO";
 import axios from "axios";
 
-// import dayjs from "dayjs";
 const moment = require("moment");
 require("moment-timezone");
 moment.tz.setDefault("Asia/Seoul");
@@ -128,28 +127,30 @@ const createObserved = async () => {
 
   const temp = +ultraSrtNcst[2].obsrValue;
   const wind = +ultraSrtNcst[3].obsrValue;
+  const humidity = +ultraSrtNcst[0].obsrValue;
+
   let sensTemp = temp;
-  //! 체감 온도 수정 예정
-  // if (dayjs().get("M") >= 5 && dayjs().get("M") >= 9) {
-  //   //* 여름 체감 온도 계산 api 호출
-  //   //sensTemp = await axios.get(ultraSrtNcstUrl + queryParams);
-  // } else if (temp <= 10 && wind >= 1.3) { //! ^ 제대로 되는지 확인 -> Math
-  //   sensTemp = 13.12 + 0.6215 * temp - 11.37 * wind ^ 0.16 + 0.3965 * wind ^ 0.16 * temp;
-  // }
+  const month = moment().month() + 1;
+
+  if (month > 4 && month < 10) { //여름철
+    const tw = temp * Math.atan(0.151977 * Math.pow(humidity + 8.313659, 1 / 2)) + Math.atan(temp + humidity) - Math.atan(humidity - 1.67633) + 0.00391838 * Math.pow(humidity, 3 / 2) * Math.atan(0.023101 * humidity) - 4.686035;
+    sensTemp = -0.2442 + 0.55399 * tw + 0.45535 * temp + (-0.0022 * Math.pow(tw, 2)) + 0.00278 * tw * temp + 3.0;
+  } else if (temp <= 10 && wind >= 1.3) { //겨울철
+    sensTemp = 13.12 + 0.6215 * temp - 11.37 * Math.pow(wind, 0.16) + 0.3965 * Math.pow(wind, 0.16) * temp;
+  }
 
   const data = {
     date: moment().format("YYYYMMDD"),
     time: moment().format("HH00"),
     temperature: Math.floor(temp),
-    humidity: +ultraSrtNcst[0].obsrValue,
+    humidity: humidity,
     pm25: +dust.pm25,
     pm10: +dust.pm10,
     rain: Math.round(+ultraSrtNcst[1].obsrValue),
-    sensory_temperature: Math.floor(sensTemp), //! type 수정 예정
+    sensory_temperature: Math.floor(sensTemp),
   };
 
   const result = await prisma.observed_weather.create({ data });
-  //console.log("result", result);
 
   return result;
 };
@@ -159,42 +160,42 @@ const createDailyForecast = async () => {
 
   const sunUrl = 'http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getAreaRiseSetInfo';
   let sunQueryParams = '?' + encodeURIComponent('serviceKey') + '=vIpsf9%2FsPoI5izpvvyzFGPI7SPyElJCB43d%2BwRQeygk%2FSbl%2Bg%2Fz9y8wWyZpZ2jeUOw6kXEURYdAg%2BZMEfpNH6Q%3D%3D'; /* Service Key*/
-  sunQueryParams += '&' + encodeURIComponent('locdate') + '=' + encodeURIComponent(date); 
-  sunQueryParams += '&' + encodeURIComponent('location') + '=' + encodeURIComponent('서울'); 
-  
+  sunQueryParams += '&' + encodeURIComponent('locdate') + '=' + encodeURIComponent(date);
+  sunQueryParams += '&' + encodeURIComponent('location') + '=' + encodeURIComponent('서울');
+
   const fcstUrl = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst';
   let fcstQueryParams = '?' + encodeURIComponent('serviceKey') + '=vIpsf9%2FsPoI5izpvvyzFGPI7SPyElJCB43d%2BwRQeygk%2FSbl%2Bg%2Fz9y8wWyZpZ2jeUOw6kXEURYdAg%2BZMEfpNH6Q%3D%3D'; /* Service Key*/
-  fcstQueryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); 
-  fcstQueryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('1000'); 
-  fcstQueryParams += '&' + encodeURIComponent('dataType') + '=' + encodeURIComponent('JSON'); 
-  fcstQueryParams += '&' + encodeURIComponent('base_date') + '=' + encodeURIComponent(date); 
-  fcstQueryParams += '&' + encodeURIComponent('base_time') + '=' + encodeURIComponent('0200'); 
-  fcstQueryParams += '&' + encodeURIComponent('nx') + '=' + encodeURIComponent('60'); 
-  fcstQueryParams += '&' + encodeURIComponent('ny') + '=' + encodeURIComponent('127'); 
+  fcstQueryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1');
+  fcstQueryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('1000');
+  fcstQueryParams += '&' + encodeURIComponent('dataType') + '=' + encodeURIComponent('JSON');
+  fcstQueryParams += '&' + encodeURIComponent('base_date') + '=' + encodeURIComponent(date);
+  fcstQueryParams += '&' + encodeURIComponent('base_time') + '=' + encodeURIComponent('0200');
+  fcstQueryParams += '&' + encodeURIComponent('nx') + '=' + encodeURIComponent('60');
+  fcstQueryParams += '&' + encodeURIComponent('ny') + '=' + encodeURIComponent('127');
 
   const wrnUrl = 'http://apis.data.go.kr/1360000/WthrWrnInfoService/getPwnCd';
   let wrnQueryParams = '?' + encodeURIComponent('serviceKey') + '=vIpsf9%2FsPoI5izpvvyzFGPI7SPyElJCB43d%2BwRQeygk%2FSbl%2Bg%2Fz9y8wWyZpZ2jeUOw6kXEURYdAg%2BZMEfpNH6Q%3D%3D'; /* Service Key*/
-  wrnQueryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); 
+  wrnQueryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1');
   wrnQueryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('10');
-  wrnQueryParams += '&' + encodeURIComponent('dataType') + '=' + encodeURIComponent('JSON'); 
-  wrnQueryParams += '&' + encodeURIComponent('areaCode') + '=' + encodeURIComponent('L1100400'); 
+  wrnQueryParams += '&' + encodeURIComponent('dataType') + '=' + encodeURIComponent('JSON');
+  wrnQueryParams += '&' + encodeURIComponent('areaCode') + '=' + encodeURIComponent('L1100400');
 
-  const sunData = (await axios.get(sunUrl+sunQueryParams)).data.response.body.items.item;
-  const fcstData = (await axios.get(fcstUrl+fcstQueryParams)).data.response.body.items.item;
-  const wrnRes = (await axios.get(wrnUrl+wrnQueryParams)).data.response;
+  const sunData = (await axios.get(sunUrl + sunQueryParams)).data.response.body.items.item;
+  const fcstData = (await axios.get(fcstUrl + fcstQueryParams)).data.response.body.items.item;
+  const wrnRes = (await axios.get(wrnUrl + wrnQueryParams)).data.response;
 
   const wrnArr = [8, 5, 7, 2, 3, 12, 1, 6, 9, 4]
   let wrnCode = null
 
-  if (wrnRes.header.resultCode!='03') {
-      const wrnData = wrnRes.body.items.item;
+  if (wrnRes.header.resultCode != '03') {
+    const wrnData = wrnRes.body.items.item;
 
-      const indexArr = wrnData.map((element) => {
-          return wrnArr.indexOf(element.warnVar);
-      })
+    const indexArr = wrnData.map((element) => {
+      return wrnArr.indexOf(element.warnVar);
+    })
 
-      const minIndex = (indexArr.indexOf(Math.min(...indexArr)));
-      wrnCode = wrnData[indexArr[minIndex]].warnVar;
+    const minIndex = (indexArr.indexOf(Math.min(...indexArr)));
+    wrnCode = wrnData[indexArr[minIndex]].warnVar;
   }
 
   const fcstFilter = (item) => {
@@ -211,7 +212,7 @@ const createDailyForecast = async () => {
     date: date,
     sunrise: sunData['sunrise'].trim(),
     sunset: sunData['sunset'].trim(),
-    minTemp: filteredFcst[0]['fcstValue'], 
+    minTemp: filteredFcst[0]['fcstValue'],
     maxTemp: filteredFcst[1]['fcstValue'],
     warning: wrnCode,
   };
@@ -269,7 +270,7 @@ const createHourlyForecast = async () => {
   //객체형태로 저장 date(key값)
   const filteredFcst = fcstData.filter(fcstFilter);
   console.log(filteredFcst);
-  
+
   const arr = [];
   for (let i = 0; i < filteredFcst.length; i += 4) {
     const data = {
