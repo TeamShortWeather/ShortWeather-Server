@@ -66,7 +66,7 @@ const createObserved = async () => {
     "&" + encodeURIComponent("ny") + "=" + encodeURIComponent("127"); /* */
 
   const dustUrl =
-    "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty";
+    "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty";
   let dustQueryParams =
     "?" +
     encodeURIComponent("serviceKey") +
@@ -86,14 +86,9 @@ const createObserved = async () => {
     encodeURIComponent("JSON"); /* */
   dustQueryParams +=
     "&" +
-    encodeURIComponent("stationName") +
+    encodeURIComponent("sidoName") +
     "=" +
-    encodeURIComponent("중구"); /* */
-  dustQueryParams +=
-    "&" +
-    encodeURIComponent("dataTerm") +
-    "=" +
-    encodeURIComponent("DAILY"); /* */
+    encodeURIComponent("서울"); /* */
   dustQueryParams +=
     "&" + encodeURIComponent("ver") + "=" + encodeURIComponent("1.3"); /* */
 
@@ -137,6 +132,13 @@ const createObserved = async () => {
     return false;
   }
 
+  function dustFilter(item) {
+    const array = ['중구', '종로구'];
+    if (array.includes(item.stationName))
+      return true;
+    return false;
+  }
+
   let ultraSrtNcst, dust, ultraSrtFcst;
 
   await axios.all([axios.get(ultraSrtNcstUrl + queryParams), axios.get(dustUrl + dustQueryParams), axios.get(ultraSrtFcstUrl + fcstQueryParams)])
@@ -149,7 +151,11 @@ const createObserved = async () => {
       ultraSrtNcst = value;
 
       const dustJson = dustResult.data.response.body.items;
-      dust = { pm25: dustJson[0].pm25Grade1h, pm10: dustJson[0].pm10Grade1h };
+      const dustFiltered = dustJson.filter(dustFilter);
+      dust = {
+        pm25: dustFiltered[0].pm25Grade1h ?? dustFiltered[1].pm25Grade1h,
+        pm10: dustFiltered[0].pm10Grade1h ?? dustFiltered[1].pm25Grade1h
+      };
 
       const fcstJson = fcstResult.data.response.body.items.item;
       const fcstFiltered = fcstJson.filter(fcstFilter);
@@ -160,8 +166,7 @@ const createObserved = async () => {
     }))
     .catch((err) => console.log(err));
 
-  if (ultraSrtNcst == undefined || dust == undefined || ultraSrtFcst == undefined
-    || !dust.pm25 || !dust.pm10) return null;
+  if (ultraSrtNcst == undefined || dust == undefined || ultraSrtFcst == undefined) return null;
 
   const temp = +ultraSrtNcst[2].obsrValue;
   const wind = +ultraSrtNcst[3].obsrValue;
