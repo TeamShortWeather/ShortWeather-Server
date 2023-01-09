@@ -115,6 +115,9 @@ const getWeatherDetail = async (userId: number) => {
     console.log(goOut);
     console.log(goHome);
     
+    const sky = ['','맑음','','구름많음','흐림']
+    const pty = ['비','비 또는 눈','눈','소나기','이슬비','진눈깨비','눈날림']
+    const image = (goOut[0].sky!=0)? sky[goOut[0].sky] : pty[goOut[0].pty];
 
     const observed = await prisma.observed_weather.findFirst();
     const daily = await prisma.daily_forecast.findFirst();
@@ -123,10 +126,12 @@ const getWeatherDetail = async (userId: number) => {
         goOut: {
             time: user.go_out_time,
             temp: goOut[0].temperature,
+            image: image,
         },
         goHome: {
             time: user.go_home_time,
             temp: goHome[0].temperature,
+            image: image,
         },
         todayWeather: {
             humidity: observed.humidity,
