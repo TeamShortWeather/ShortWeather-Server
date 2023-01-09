@@ -8,9 +8,9 @@ import AuthService from '../services/AuthService';
 const { TOKEN_INVALID, TOKEN_EXPIRED } = require('../modules/jwt');
 const db = require('../loaders/db');
 
-const auth = async (req: Request, res: Response, next: NextFunction) => {
+export default async (req: Request, res: Response, next: NextFunction) => {
   // request-header 에서 토큰 받아오기
-  const token = req.header('authorization');
+  const token = req.header('Authorization');
 
   // 토큰 유무 검증
   if (!token) {
@@ -29,7 +29,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
       //토큰이 유효하지 않다면
       return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, message.TOKEN_INVALID));
     }
-    req.body.user = (decoded as any).user;
+    req.body.user = (decoded as any).userId;
 
     next(); // 미들웨어 실행 끝나면 다음으로 넘기기
   } catch (error: any) {
@@ -39,5 +39,3 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
     res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, message.TOKEN_INVALID));
   }
 };
-
-module.exports = { auth };

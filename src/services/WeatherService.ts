@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { TodayWeatherDTO } from "../DTO/WeatherDTO";
+
 const prisma = new PrismaClient();
+
 const moment = require("moment");
 require("moment-timezone");
 moment.tz.setDefault("Asia/Seoul");
@@ -108,21 +110,57 @@ const getRainForecast = async () => {
     return result;
 };
 
-const getWeatherDetail = async () => {
+const getWeatherDetail = async (userId: number) => {
     const user = await prisma.user.findUnique({
         where: {
-            id: 1,
+            id: userId,
         },
     });
+
+    const goOut = await prisma.hourly_forecast.findMany({
+        where: {
+            date: date,
+            time: user.go_out_time,
+        },
+        select: {
+            temperature: true,
+            sky: true,
+            pty: true,
+        }
+    });
+
+    const goHome = await prisma.hourly_forecast.findMany({
+        where: {
+            date: date,
+            time: user.go_home_time,
+        },
+        select: {
+            temperature: true,
+            sky: true,
+            pty: true,
+        }
+    });
+
+    console.log(goOut);
+    console.log(goHome);
+    
+    const sky = ['','맑음','','구름많음','흐림']
+    const pty = ['비','비 또는 눈','눈','소나기','이슬비','진눈깨비','눈날림']
+    const image = (goOut[0].sky!=0)? sky[goOut[0].sky] : pty[goOut[0].pty];
+
     const observed = await prisma.observed_weather.findFirst();
     const daily = await prisma.daily_forecast.findFirst();
 
     const data = {
         goOut: {
             time: user.go_out_time,
+            temp: goOut[0].temperature,
+            image: image,
         },
         goHome: {
             time: user.go_home_time,
+            temp: goHome[0].temperature,
+            image: image,
         },
         todayWeather: {
             humidity: observed.humidity,
