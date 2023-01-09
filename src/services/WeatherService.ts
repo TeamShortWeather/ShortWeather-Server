@@ -105,11 +105,13 @@ const getRainForecast = async () => {
             },
         },
         select: {
+            date: true,
             time: true,
             rain: true,
         },
         take: 24,
     });
+    
     return result;
 };
 
@@ -150,6 +152,7 @@ const getWeatherDetail = async (userId: number) => {
     const daily = await prisma.daily_forecast.findFirst();
 
     const data = {
+        location: "서울, 중구 명동",
         goOut: {
             time: user.go_out_time,
             temp: goOut[0].temperature,
@@ -190,7 +193,6 @@ const getTempForecast = async () => {
             },
         },
         select: {
-            id: true,
             date: true,
             time: true,
             temperature: true,
