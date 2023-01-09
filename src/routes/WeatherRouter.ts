@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { WeatherController } from '../controllers';
 import authToken from '../modules/authToken';
-import auth from "../middleware/auth";
 
 const router = Router();
 
