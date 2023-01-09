@@ -11,10 +11,10 @@ moment.suppressDeprecationWarnings = true;
 let now = moment();
 let date = now.format("YYYYMMDD");
 let time = now.format("HH00");
-const yesterday = now.add(-1, 'd').format("YYYYMMDD");
+const yesterday = now.add(-1, "d").format("YYYYMMDD");
 
-const sky = ['','맑음','','구름많음','흐림'];
-const pty = ['비','비 또는 눈','눈','소나기','이슬비','진눈깨비','눈날림'];
+const sky = ['', '맑음', '', '구름많음', '흐림'];
+const pty = ['비', '비 또는 눈', '눈', '소나기', '이슬비', '진눈깨비', '눈날림'];
 
 //* 오늘 날씨 정보 조회 
 const getTodayWeather = async () => {
@@ -32,7 +32,7 @@ const getTodayWeather = async () => {
     });
     const observedYesterday = await prisma.observed_weather.findFirst({
         where: {
-            date: yesterday,  
+            date: yesterday,
             time: time,
         }
     });
@@ -52,26 +52,42 @@ const getTodayWeather = async () => {
     const messageIdx = Math.floor(Math.random() * messageCount);
 
     //! 덥다, 춥다, 비슷하다 - 몇도 차이일때 기준?
-    const getCompareMessage = (todayTemp: number, yesterdayTemp: number, month: number) => {
-        const compareMessages = ['어제보다 따뜻해요', '어제보다 추워요', '어제보다 더워요', '어제보다 선선해요', '어제보다 따뜻해요', '어제보다 서늘해요', '어제와 비슷해요'];
+    const getCompareMessage = (
+        todayTemp: number,
+        yesterdayTemp: number,
+        month: number
+    ) => {
+        const compareMessages = [
+            "어제보다 따뜻해요",
+            "어제보다 추워요",
+            "어제보다 더워요",
+            "어제보다 선선해요",
+            "어제보다 따뜻해요",
+            "어제보다 서늘해요",
+            "어제와 비슷해요",
+        ];
         if (todayTemp == yesterdayTemp) {
             return compareMessages[6];
         }
         let idx = 0; //겨울
-        if (month == 5 || month == 9) {// 봄 / 가을
+        if (month == 5 || month == 9) {
+            // 봄 / 가을
             idx = 4;
-        } else if (month > 3 && month < 9) { // 여름
+        } else if (month > 3 && month < 9) {
+            // 여름
             idx = 2;
         }
-        if (todayTemp < yesterdayTemp)
-            idx++;
+        if (todayTemp < yesterdayTemp) idx++;
         return compareMessages[idx];
-    }
-    const compareMessage = getCompareMessage(observedToday.sensory_temperature, observedYesterday.sensory_temperature, now.month() + 1);
+    };
+    const compareMessage = getCompareMessage(
+        observedToday.sensory_temperature,
+        observedYesterday.sensory_temperature,
+        now.month() + 1
+    );
+    const image = (observedToday.sky != 0) ? sky[observedToday.sky] : pty[observedToday.pty];
 
-    const image = (observedToday.sky != 0)? sky[observedToday.sky] : pty[observedToday.pty];
-
-    const breakingNewsArr = [ '','강풍', '호우', '한파', '건조', '폭풍해일', '풍랑', '태풍', '대설', '황사', '', '', '폭염'];
+    const breakingNewsArr = ['', '강풍', '호우', '한파', '건조', '폭풍해일', '풍랑', '태풍', '대설', '황사', '', '', '폭염'];
     const breakingNews = breakingNewsArr[dailyForecast.warning] + '특보';
 
     const result: TodayWeatherDTO = {
@@ -81,13 +97,13 @@ const getTodayWeather = async () => {
         breakingNews: breakingNews,
         fineDust: observedToday.pm10,
         ultrafineDust: observedToday.pm25,
-        imageTime: time, 
+        imageTime: time,
         imageDesc: image,
         currentTemp: observedToday.temperature,
         minTemp: dailyForecast.min_temp,
         maxTemp: dailyForecast.max_temp,
         weatherMessage: weatherMessage[messageIdx].message,
-    }
+    };
 
     return result;
 };
@@ -110,11 +126,13 @@ const getRainForecast = async () => {
             },
         },
         select: {
+            date: true,
             time: true,
             rain: true,
         },
         take: 24,
     });
+
     return result;
 };
 
@@ -134,7 +152,7 @@ const getWeatherDetail = async (userId: number) => {
             temperature: true,
             sky: true,
             pty: true,
-        }
+        },
     });
 
     const goHome = await prisma.hourly_forecast.findMany({
@@ -146,18 +164,16 @@ const getWeatherDetail = async (userId: number) => {
             temperature: true,
             sky: true,
             pty: true,
-        }
+        },
     });
 
-    console.log(goOut);
-    console.log(goHome);
-    
-    const image = (goOut[0].sky!=0)? sky[goOut[0].sky] : pty[goOut[0].pty];
+    const image = goOut[0].sky != 0 ? sky[goOut[0].sky] : pty[goOut[0].pty];
 
     const observed = await prisma.observed_weather.findFirst();
     const daily = await prisma.daily_forecast.findFirst();
 
     const data = {
+        location: "서울, 중구 명동",
         goOut: {
             time: user.go_out_time,
             temp: goOut[0].temperature,
@@ -191,14 +207,13 @@ const getTempForecast = async () => {
         },
     });
 
-    const result = await prisma.hourly_forecast.findMany({
+    const hourly = await prisma.hourly_forecast.findMany({
         where: {
             id: {
-                gt: start.id - 1,
+                gte: start.id,
             },
         },
         select: {
-            id: true,
             date: true,
             time: true,
             temperature: true,
@@ -208,7 +223,15 @@ const getTempForecast = async () => {
         take: 24,
     });
 
-    console.log(result.length);
+    const result = hourly.map((element) => {
+        return {
+            date: element.date,
+            time: element.time,
+            temperature: element.temperature,
+            image: element.sky != 0 ? sky[element.sky] : pty[element.pty],
+        };
+    });
+
     return result;
 };
 
@@ -243,7 +266,7 @@ const getQuestionMessage = async () => {
     const data = {
         temp: todayWeather.temperature,
         weatherMessage: weatherMessage[messageIdx].message,
-    }
+    };
 
     return data;
 };

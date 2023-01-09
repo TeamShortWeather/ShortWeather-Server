@@ -61,7 +61,7 @@ const getRainForecast = async (req: Request, res: Response) => {
  */
 const getWeatherDetail = async (req: Request, res: Response) => {
   const accessToken = req.header("Authorization");
-  const data = await WeatherService.getWeatherDetail(req.body.user);
+  const data = await WeatherService.getWeatherDetail(req.body.userId);
 
   if (!data)
     return res
