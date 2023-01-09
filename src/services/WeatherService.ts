@@ -9,6 +9,7 @@ moment.suppressDeprecationWarnings = true;
 let now = moment();
 let date = now.format("YYYYMMDD");
 let time = now.format("HH00");
+const yesterday = now.add(-1, 'd').format("YYYYMMDD");
 
 //* 오늘 날씨 정보 조회 
 const getTodayWeather = async () => {
@@ -16,7 +17,7 @@ const getTodayWeather = async () => {
     const observedToday = await prisma.observed_weather.findFirst({
         where: {
             date: date,
-            time: time,
+            time: "1700",//time, //! 수정예정
         }
     });
     const dailyForecast = await prisma.daily_forecast.findFirst({
@@ -24,21 +25,49 @@ const getTodayWeather = async () => {
             date: date,
         }
     });
-    const yesterday = now.add(-1, 'd').format("YYYYMMDD");
     const observedYesterday = await prisma.observed_weather.findFirst({
         where: {
-            date: date,//yesterday,
+            date: date,//yesterday,  //! 수정예정
             time: "0500",//time, //! 수정예정
         }
     });
+    const weatherMessage = await prisma.today_message.findMany({
+        where: {
+            warning: dailyForecast.warning ?? 3, //? 3 - 한파 default
+        },
+        select: {
+            message: true,
+        },
+    });
 
-    if (!observedToday || !observedYesterday || !dailyForecast)
+    if (!observedToday || !observedYesterday || !dailyForecast || !weatherMessage)
         return null;
 
+    const messageCount = weatherMessage.length;
+    const messageIdx = Math.floor(Math.random() * messageCount);
+
+    //! 덥다, 춥다, 비슷하다 - 몇도 차이일때 기준?
+    const getCompareMessage = (todayTemp: number, yesterdayTemp: number, month: number) => {
+        const compareMessages = ['어제보다 따뜻해요', '어제보다 추워요', '어제보다 더워요', '어제보다 선선해요', '어제보다 따뜻해요', '어제보다 서늘해요', '어제와 비슷해요'];
+        if (todayTemp == yesterdayTemp) {
+            return compareMessages[6];
+        }
+        let idx = 0; //겨울
+        if (month == 5 || month == 9) {// 봄 / 가을
+            idx = 4;
+        } else if (month > 3 && month < 9) { // 여름
+            idx = 2;
+        }
+        if (todayTemp < yesterdayTemp)
+            idx++;
+        return compareMessages[idx];
+    }
+    const compareMessage = getCompareMessage(observedToday.sensory_temperature, observedYesterday.sensory_temperature, now.month() + 1);
+
     const result: TodayWeatherDTO = {
-        location: "종로구",
+        location: "서울, 중구 명동",
         compareTemp: observedToday.temperature - observedYesterday.temperature,
-        compareMessage: "더어유", //! 미정 - 체감온도
+        compareMessage: compareMessage,
         breakingNews: dailyForecast.warning, //! 특보 -> string 으로 변경
         fineDust: observedToday.pm10,
         ultrafineDust: observedToday.pm25,
@@ -47,7 +76,7 @@ const getTodayWeather = async () => {
         currentTemp: observedToday.temperature,
         minTemp: dailyForecast.min_temp,
         maxTemp: dailyForecast.max_temp,
-        weatherMessage: "미정입니다!", //!미정
+        weatherMessage: weatherMessage[messageIdx].message,
     }
 
     return result;
@@ -139,11 +168,48 @@ const getTempForecast = async () => {
     return result;
 };
 
+const getQuestionMessage = async () => {
+    const todayWeather = await prisma.observed_weather.findFirst({
+        where: {
+            date: yesterday,
+        },
+        select: {
+            temperature: true,
+        },
+    });
+    const dailyForecast = await prisma.daily_forecast.findFirst({
+        where: {
+            date: yesterday,
+        },
+        select: {
+            warning: true,
+        },
+    });
+    const weatherMessage = await prisma.yesterday_message.findMany({
+        where: {
+            warning: dailyForecast.warning ?? 3,
+        },
+        select: {
+            message: true,
+        },
+    });
+    const messageCount = weatherMessage.length;
+    const messageIdx = Math.floor(Math.random() * messageCount);
+
+    const data = {
+        temp: todayWeather.temperature,
+        weatherMessage: weatherMessage[messageIdx].message,
+    }
+
+    return data;
+};
+
 const WeatherService = {
     getTodayWeather,
     getWeatherDetail,
     getTempForecast,
     getRainForecast,
+    getQuestionMessage,
 };
 
 export default WeatherService;
