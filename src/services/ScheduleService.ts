@@ -3,7 +3,6 @@ import { PrismaClient } from "@prisma/client";
 import { DailyForecastDTO } from "../DTO/ScheduleDTO";
 import axios from "axios";
 
-// import dayjs from "dayjs";
 const moment = require("moment");
 require("moment-timezone");
 moment.tz.setDefault("Asia/Seoul");
@@ -166,24 +165,27 @@ const createObserved = async () => {
 
   const temp = +ultraSrtNcst[2].obsrValue;
   const wind = +ultraSrtNcst[3].obsrValue;
+  const humidity = +ultraSrtNcst[0].obsrValue;
+
   let sensTemp = temp;
-  //! 체감 온도 수정 예정
-  // if (dayjs().get("M") >= 5 && dayjs().get("M") >= 9) {
-  //   //* 여름 체감 온도 계산 api 호출
-  //   //sensTemp = await axios.get(ultraSrtNcstUrl + queryParams);
-  // } else if (temp <= 10 && wind >= 1.3) { //! ^ 제대로 되는지 확인 -> Math
-  //   sensTemp = 13.12 + 0.6215 * temp - 11.37 * wind ^ 0.16 + 0.3965 * wind ^ 0.16 * temp;
-  // }
+  const month = moment().month() + 1;
+
+  if (month > 4 && month < 10) { //여름철
+    const tw = temp * Math.atan(0.151977 * Math.pow(humidity + 8.313659, 1 / 2)) + Math.atan(temp + humidity) - Math.atan(humidity - 1.67633) + 0.00391838 * Math.pow(humidity, 3 / 2) * Math.atan(0.023101 * humidity) - 4.686035;
+    sensTemp = -0.2442 + 0.55399 * tw + 0.45535 * temp + (-0.0022 * Math.pow(tw, 2)) + 0.00278 * tw * temp + 3.0;
+  } else if (temp <= 10 && wind >= 1.3) { //겨울철
+    sensTemp = 13.12 + 0.6215 * temp - 11.37 * Math.pow(wind, 0.16) + 0.3965 * Math.pow(wind, 0.16) * temp;
+  }
 
   const data = {
     date: moment().format("YYYYMMDD"),
     time: moment().format("HH00"),
     temperature: Math.floor(temp),
-    humidity: +ultraSrtNcst[0].obsrValue,
+    humidity: humidity,
     pm25: +dust.pm25,
     pm10: +dust.pm10,
     rain: Math.round(+ultraSrtNcst[1].obsrValue),
-    sensory_temperature: Math.floor(sensTemp), //! type 수정 예정
+    sensory_temperature: Math.floor(sensTemp),
     sky: +ultraSrtFcst[1].obsrValue,
     pty: +ultraSrtFcst[0].obsrValue,
   };
