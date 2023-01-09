@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { TodayWeatherDTO } from "../DTO/WeatherDTO";
+
 const prisma = new PrismaClient();
+
 const moment = require("moment");
 require("moment-timezone");
 moment.tz.setDefault("Asia/Seoul");
@@ -79,10 +81,13 @@ const getRainForecast = async () => {
     return result;
 };
 
-const getWeatherDetail = async () => {
+const getWeatherDetail = async (userId: number) => {
+
+    console.log(userId)
+
     const user = await prisma.user.findUnique({
         where: {
-            id: 1,
+            id: userId,
         },
     });
     const observed = await prisma.observed_weather.findFirst();
