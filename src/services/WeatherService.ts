@@ -13,13 +13,16 @@ let date = now.format("YYYYMMDD");
 let time = now.format("HH00");
 const yesterday = now.add(-1, 'd').format("YYYYMMDD");
 
+const sky = ['','맑음','','구름많음','흐림'];
+const pty = ['비','비 또는 눈','눈','소나기','이슬비','진눈깨비','눈날림'];
+
 //* 오늘 날씨 정보 조회 
 const getTodayWeather = async () => {
     //! 동시에 db 출발했다가 먼저 받아오는 친구부터 하도록 수정
     const observedToday = await prisma.observed_weather.findFirst({
         where: {
             date: date,
-            time: "1700",//time, //! 수정예정
+            time: time,
         }
     });
     const dailyForecast = await prisma.daily_forecast.findFirst({
@@ -29,8 +32,8 @@ const getTodayWeather = async () => {
     });
     const observedYesterday = await prisma.observed_weather.findFirst({
         where: {
-            date: date,//yesterday,  //! 수정예정
-            time: "0500",//time, //! 수정예정
+            date: yesterday,  
+            time: time,
         }
     });
     const weatherMessage = await prisma.today_message.findMany({
@@ -41,7 +44,7 @@ const getTodayWeather = async () => {
             message: true,
         },
     });
-
+    //console.log(observedToday, observedYesterday, dailyForecast, weatherMessage);
     if (!observedToday || !observedYesterday || !dailyForecast || !weatherMessage)
         return null;
 
@@ -66,6 +69,8 @@ const getTodayWeather = async () => {
     }
     const compareMessage = getCompareMessage(observedToday.sensory_temperature, observedYesterday.sensory_temperature, now.month() + 1);
 
+    const image = (observedToday.sky != 0)? sky[observedToday.sky] : pty[observedToday.pty];
+
     const result: TodayWeatherDTO = {
         location: "서울, 중구 명동",
         compareTemp: observedToday.temperature - observedYesterday.temperature,
@@ -73,8 +78,8 @@ const getTodayWeather = async () => {
         breakingNews: dailyForecast.warning, //! 특보 -> string 으로 변경
         fineDust: observedToday.pm10,
         ultrafineDust: observedToday.pm25,
-        weatherImage: 1, //!미정
-        weatherImageDesc: "준비중입니다!", //!미정
+        imageTime: time, 
+        imageDesc: image,
         currentTemp: observedToday.temperature,
         minTemp: dailyForecast.min_temp,
         maxTemp: dailyForecast.max_temp,
@@ -144,8 +149,6 @@ const getWeatherDetail = async (userId: number) => {
     console.log(goOut);
     console.log(goHome);
     
-    const sky = ['','맑음','','구름많음','흐림']
-    const pty = ['비','비 또는 눈','눈','소나기','이슬비','진눈깨비','눈날림']
     const image = (goOut[0].sky!=0)? sky[goOut[0].sky] : pty[goOut[0].pty];
 
     const observed = await prisma.observed_weather.findFirst();
