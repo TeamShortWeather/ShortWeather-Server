@@ -65,11 +65,11 @@ const getWeatherDetail = async (req: Request, res: Response) => {
   if (!data)
     return res
       .status(sc.BAD_REQUEST)
-      .send(util.fail(sc.BAD_REQUEST, rm.READ_OBSERVED_WEATHER_FAIL));
+      .send(util.fail(sc.BAD_REQUEST, rm.READ_WEATHER_DETAIL_FAIL));
 
   return res
     .status(sc.OK)
-    .send(util.success(sc.OK, rm.READ_OBSERVED_WEATHER_SUCCESS, data));
+    .send(util.success(sc.OK, rm.READ_WEATHER_DETAIL_SUCCESS, data));
 };
 
 /**
@@ -85,11 +85,11 @@ const getTempForecast = async (req: Request, res: Response) => {
   if (!data)
     return res
       .status(sc.BAD_REQUEST)
-      .send(util.fail(sc.BAD_REQUEST, rm.READ_OBSERVED_WEATHER_FAIL));
+      .send(util.fail(sc.BAD_REQUEST, rm.READ_TEMP_WEATHER_FAIL));
 
   return res
     .status(sc.OK)
-    .send(util.success(sc.OK, rm.READ_OBSERVED_WEATHER_SUCCESS, data));
+    .send(util.success(sc.OK, rm.READ_TEMP_WEATHER_SUCCESS, data));
 };
 
 export default {
