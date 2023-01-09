@@ -12,6 +12,9 @@ let now = moment();
 let date = now.format("YYYYMMDD");
 let time = now.format("HH00");
 
+const sky = ['','맑음','','구름많음','흐림']
+const pty = ['비','비 또는 눈','눈','소나기','이슬비','진눈깨비','눈날림']
+
 //* 오늘 날씨 정보 조회 
 const getTodayWeather = async () => {
     //! 동시에 db 출발했다가 먼저 받아오는 친구부터 하도록 수정
@@ -115,8 +118,6 @@ const getWeatherDetail = async (userId: number) => {
     console.log(goOut);
     console.log(goHome);
     
-    const sky = ['','맑음','','구름많음','흐림']
-    const pty = ['비','비 또는 눈','눈','소나기','이슬비','진눈깨비','눈날림']
     const image = (goOut[0].sky!=0)? sky[goOut[0].sky] : pty[goOut[0].pty];
 
     const observed = await prisma.observed_weather.findFirst();
@@ -156,10 +157,10 @@ const getTempForecast = async () => {
         },
     });
 
-    const result = await prisma.hourly_forecast.findMany({
+    const hourly = await prisma.hourly_forecast.findMany({
         where: {
             id: {
-                gt: start.id - 1,
+                gte: start.id,
             },
         },
         select: {
@@ -172,6 +173,16 @@ const getTempForecast = async () => {
         },
         take: 24,
     });
+
+    const result = hourly.map((element) => {
+        return {
+            id: element.id,
+            date: element.date,
+            time: element.time,
+            temperature: element.temperature,
+            image: (element.sky!=0)? sky[element.sky] : pty[element.pty]
+        }
+    })
 
     console.log(result.length);
     return result;
