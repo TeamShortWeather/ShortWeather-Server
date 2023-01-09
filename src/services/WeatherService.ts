@@ -82,23 +82,51 @@ const getRainForecast = async () => {
 };
 
 const getWeatherDetail = async (userId: number) => {
-
-    console.log(userId)
-
     const user = await prisma.user.findUnique({
         where: {
             id: userId,
         },
     });
+
+    const goOut = await prisma.hourly_forecast.findMany({
+        where: {
+            date: date,
+            time: user.go_out_time,
+        },
+        select: {
+            temperature: true,
+            sky: true,
+            pty: true,
+        }
+    });
+
+    const goHome = await prisma.hourly_forecast.findMany({
+        where: {
+            date: date,
+            time: user.go_home_time,
+        },
+        select: {
+            temperature: true,
+            sky: true,
+            pty: true,
+        }
+    });
+
+    console.log(goOut);
+    console.log(goHome);
+    
+
     const observed = await prisma.observed_weather.findFirst();
     const daily = await prisma.daily_forecast.findFirst();
 
     const data = {
         goOut: {
             time: user.go_out_time,
+            temp: goOut[0].temperature,
         },
         goHome: {
             time: user.go_home_time,
+            temp: goHome[0].temperature,
         },
         todayWeather: {
             humidity: observed.humidity,
