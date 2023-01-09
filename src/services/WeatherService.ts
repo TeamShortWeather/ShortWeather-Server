@@ -71,11 +71,14 @@ const getTodayWeather = async () => {
 
     const image = (observedToday.sky != 0)? sky[observedToday.sky] : pty[observedToday.pty];
 
+    const breakingNewsArr = [ '','강풍', '호우', '한파', '건조', '폭풍해일', '풍랑', '태풍', '대설', '황사', '', '', '폭염'];
+    const breakingNews = breakingNewsArr[dailyForecast.warning] + '특보';
+
     const result: TodayWeatherDTO = {
         location: "서울, 중구 명동",
         compareTemp: observedToday.temperature - observedYesterday.temperature,
         compareMessage: compareMessage,
-        breakingNews: dailyForecast.warning, //! 특보 -> string 으로 변경
+        breakingNews: breakingNews,
         fineDust: observedToday.pm10,
         ultrafineDust: observedToday.pm25,
         imageTime: time, 
