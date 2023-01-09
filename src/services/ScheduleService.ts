@@ -23,81 +23,32 @@ interface Weather {
 const createObserved = async () => {
   let now = moment();
   if (now.get("m") < 40) {
-    if (now.get("h") == 0) {
-      now = now.set("h", 23);
-      now = now.add(-1, "day");
-    } else now = now.add(-1, "h");
+    now = now.add(-1, "h");
   }
   const time = now.format("HH00");
   const date = now.format("YYYYMMDD");
 
-  const ultraSrtNcstUrl =
-    "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst";
-  let queryParams =
-    "?" +
-    encodeURIComponent("serviceKey") +
-    "=" +
-    `${process.env.WEATHER_SERVICE_KEY}`; /* Service Key*/
-  queryParams +=
-    "&" + encodeURIComponent("pageNo") + "=" + encodeURIComponent("1"); /* */
-  queryParams +=
-    "&" +
-    encodeURIComponent("numOfRows") +
-    "=" +
-    encodeURIComponent("1000"); /* */
-  queryParams +=
-    "&" +
-    encodeURIComponent("dataType") +
-    "=" +
-    encodeURIComponent("JSON"); /* */
-  queryParams +=
-    "&" +
-    encodeURIComponent("base_date") +
-    "=" +
-    encodeURIComponent(date); /* */
-  queryParams +=
-    "&" +
-    encodeURIComponent("base_time") +
-    "=" +
-    encodeURIComponent(time); /* */
-  queryParams +=
-    "&" + encodeURIComponent("nx") + "=" + encodeURIComponent("60"); /* */
-  queryParams +=
-    "&" + encodeURIComponent("ny") + "=" + encodeURIComponent("127"); /* */
+  const ultraSrtNcstUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst";
+  let queryParams = "?" + encodeURIComponent("serviceKey") + "=" + `${process.env.WEATHER_SERVICE_KEY}`; /* Service Key*/
+  queryParams += "&" + encodeURIComponent("pageNo") + "=" + encodeURIComponent("1"); /* */
+  queryParams += "&" + encodeURIComponent("numOfRows") + "=" + encodeURIComponent("1000"); /* */
+  queryParams += "&" + encodeURIComponent("dataType") + "=" + encodeURIComponent("JSON"); /* */
+  queryParams += "&" + encodeURIComponent("base_date") + "=" + encodeURIComponent(date); /* */
+  queryParams += "&" + encodeURIComponent("base_time") + "=" + encodeURIComponent(time); /* */
+  queryParams += "&" + encodeURIComponent("nx") + "=" + encodeURIComponent("60"); /* */
+  queryParams += "&" + encodeURIComponent("ny") + "=" + encodeURIComponent("127"); /* */
 
-  const dustUrl =
-    "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty";
-  let dustQueryParams =
-    "?" +
-    encodeURIComponent("serviceKey") +
-    "=" +
-    `${process.env.WEATHER_SERVICE_KEY}`; /* Service Key*/
-  dustQueryParams +=
-    "&" + encodeURIComponent("pageNo") + "=" + encodeURIComponent("1"); /* */
-  dustQueryParams +=
-    "&" +
-    encodeURIComponent("numOfRows") +
-    "=" +
-    encodeURIComponent("1000"); /* */
-  dustQueryParams +=
-    "&" +
-    encodeURIComponent("returnType") +
-    "=" +
-    encodeURIComponent("JSON"); /* */
-  dustQueryParams +=
-    "&" +
-    encodeURIComponent("sidoName") +
-    "=" +
-    encodeURIComponent("서울"); /* */
-  dustQueryParams +=
-    "&" + encodeURIComponent("ver") + "=" + encodeURIComponent("1.3"); /* */
+  const dustUrl = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty";
+  let dustQueryParams = "?" + encodeURIComponent("serviceKey") + "=" + `${process.env.WEATHER_SERVICE_KEY}`; /* Service Key*/
+  dustQueryParams += "&" + encodeURIComponent("pageNo") + "=" + encodeURIComponent("1"); /* */
+  dustQueryParams += "&" + encodeURIComponent("numOfRows") + "=" + encodeURIComponent("1000"); /* */
+  dustQueryParams += "&" + encodeURIComponent("returnType") + "=" + encodeURIComponent("JSON"); /* */
+  dustQueryParams += "&" + encodeURIComponent("sidoName") + "=" + encodeURIComponent("서울"); /* */
+  dustQueryParams += "&" + encodeURIComponent("ver") + "=" + encodeURIComponent("1.3"); /* */
 
   let forecastNow = moment();
   if (forecastNow.get("m") < 45) {
-    if (forecastNow.get("h") == 0) {
-      forecastNow = forecastNow.set("h", 23);
-      forecastNow = forecastNow.add(-1, "day");
-    } else forecastNow = forecastNow.add(-1, "h");
+    forecastNow = forecastNow.add(-1, "h");
   }
   let forecastTime = forecastNow.format("HH00");
   const forecastDate = forecastNow.format("YYYYMMDD");
@@ -143,62 +94,127 @@ const createObserved = async () => {
 
   await axios.all([axios.get(ultraSrtNcstUrl + queryParams), axios.get(dustUrl + dustQueryParams), axios.get(ultraSrtFcstUrl + fcstQueryParams)])
     .then(axios.spread((ncstResult, dustResult, fcstResult) => {
-      const ncstJson = ncstResult.data.response.body.items.item;
-      const filtered = ncstJson.filter(filter);
-      const value = filtered.map((element: Weather) => {
-        return { category: element.category, obsrValue: element.obsrValue };
-      });
-      ultraSrtNcst = value;
+      const ncstRes = ncstResult.data.response;
+      if (ncstRes.header.resultCode == "00") {
+        const ncstData = ncstResult.data.response.body.items.item;
+        const filtered = ncstData.filter(filter);
+        const value = filtered.map((element: Weather) => {
+          return { category: element.category, obsrValue: element.obsrValue };
+        });
+        ultraSrtNcst = value;
+      }
 
-      const dustJson = dustResult.data.response.body.items;
-      const dustFiltered = dustJson.filter(dustFilter);
-      dust = {
-        pm25: dustFiltered[0].pm25Grade1h ?? dustFiltered[1].pm25Grade1h,
-        pm10: dustFiltered[0].pm10Grade1h ?? dustFiltered[1].pm25Grade1h
-      };
+      const dustRes = dustResult.data.response;
+      if (dustRes.body.totalCount != 0) {
+        const dustData = dustRes.body.items;
+        const dustFiltered = dustData.filter(dustFilter);
+        dust = {
+          pm25: dustFiltered[0].pm25Grade1h ?? dustFiltered[1].pm25Grade1h,
+          pm10: dustFiltered[0].pm10Grade1h ?? dustFiltered[1].pm25Grade1h
+        };
+      }
 
-      const fcstJson = fcstResult.data.response.body.items.item;
-      const fcstFiltered = fcstJson.filter(fcstFilter);
-      const fcstValue = fcstFiltered.map((element) => {
-        return { category: element.category, obsrValue: element.fcstValue };
-      });
-      ultraSrtFcst = fcstValue;
+      const fcstRes = fcstResult.data.response;
+      if (fcstRes.header.resultCode == "00") {
+        const fcstData = fcstRes.body.items.item;
+        const fcstFiltered = fcstData.filter(fcstFilter);
+        const fcstValue = fcstFiltered.map((element) => {
+          return { category: element.category, obsrValue: element.fcstValue };
+        });
+        ultraSrtFcst = fcstValue;
+      }
     }))
     .catch((err) => console.log(err));
 
-  if (ultraSrtNcst == undefined || dust == undefined || ultraSrtFcst == undefined) return null;
+  let temp, humidity, rain, sensTemp;
+  const past = moment().add(-1, "h")
+  const pastDate = past.format("YYYYMMDD");
+  const pastTime = past.format("HH00");
+  if (ultraSrtNcst == undefined) {
+    const past_observed = await prisma.observed_weather.findFirst({
+      where: {
+        date: pastDate,
+        time: pastTime,
+      },
+      select: {
+        temperature: true,
+        rain: true,
+        humidity: true,
+        sensory_temperature: true
+      }
+    });
+    temp = past_observed.temperature;
+    humidity = past_observed.humidity;
+    rain = past_observed.rain;
+    sensTemp = past_observed.sensory_temperature;
+  } else {
+    temp = Math.floor(+ultraSrtNcst[2].obsrValue);
+    humidity = +ultraSrtNcst[0].obsrValue;
+    rain = Math.round(+ultraSrtNcst[1].obsrValue);
+    const wind = +ultraSrtNcst[3].obsrValue;
 
-  const temp = +ultraSrtNcst[2].obsrValue;
-  const wind = +ultraSrtNcst[3].obsrValue;
-  const humidity = +ultraSrtNcst[0].obsrValue;
+    sensTemp = temp;
+    const month = moment().month() + 1;
 
-  let sensTemp = temp;
-  const month = moment().month() + 1;
+    if (month > 4 && month < 10) { //여름철
+      const tw = temp * Math.atan(0.151977 * Math.pow(humidity + 8.313659, 1 / 2)) + Math.atan(temp + humidity) - Math.atan(humidity - 1.67633) + 0.00391838 * Math.pow(humidity, 3 / 2) * Math.atan(0.023101 * humidity) - 4.686035;
+      sensTemp = -0.2442 + 0.55399 * tw + 0.45535 * temp + (-0.0022 * Math.pow(tw, 2)) + 0.00278 * tw * temp + 3.0;
+    } else if (temp <= 10 && wind >= 1.3) { //겨울철
+      sensTemp = 13.12 + 0.6215 * temp - 11.37 * Math.pow(wind, 0.16) + 0.3965 * Math.pow(wind, 0.16) * temp;
+    }
+    sensTemp = Math.floor(sensTemp);
+  }
+  if (dust == undefined) {
+    const past_dust = await prisma.observed_weather.findFirst({
+      where: {
+        date: pastDate,
+        time: pastTime,
+      },
+      select: {
+        pm10: true,
+        pm25: true,
+      },
+    });
+    dust = {
+      pm25: past_dust.pm25,
+      pm10: past_dust.pm10
+    };
+  }
 
-  if (month > 4 && month < 10) { //여름철
-    const tw = temp * Math.atan(0.151977 * Math.pow(humidity + 8.313659, 1 / 2)) + Math.atan(temp + humidity) - Math.atan(humidity - 1.67633) + 0.00391838 * Math.pow(humidity, 3 / 2) * Math.atan(0.023101 * humidity) - 4.686035;
-    sensTemp = -0.2442 + 0.55399 * tw + 0.45535 * temp + (-0.0022 * Math.pow(tw, 2)) + 0.00278 * tw * temp + 3.0;
-  } else if (temp <= 10 && wind >= 1.3) { //겨울철
-    sensTemp = 13.12 + 0.6215 * temp - 11.37 * Math.pow(wind, 0.16) + 0.3965 * Math.pow(wind, 0.16) * temp;
+  let sky, pty;
+  if (ultraSrtFcst == undefined) {
+    const past_fcst = await prisma.observed_weather.findFirst({
+      where: {
+        date: pastDate,
+        time: pastTime,
+      },
+      select: {
+        pty: true,
+        sky: true,
+      },
+    });
+    sky = past_fcst.sky;
+    pty = past_fcst.pty;
+  } else {
+    sky = +ultraSrtFcst[1].obsrValue;
+    pty = +ultraSrtFcst[0].obsrValue;
   }
 
   const data = {
     date: moment().format("YYYYMMDD"),
     time: moment().format("HH00"),
-    temperature: Math.floor(temp),
+    temperature: temp,
     humidity: humidity,
     pm25: +dust.pm25,
     pm10: +dust.pm10,
-    rain: Math.round(+ultraSrtNcst[1].obsrValue),
-    sensory_temperature: Math.floor(sensTemp),
-    sky: +ultraSrtFcst[1].obsrValue,
-    pty: +ultraSrtFcst[0].obsrValue,
+    rain: rain,
+    sensory_temperature: sensTemp,
+    sky: sky,
+    pty: pty,
   };
 
-  const result = data;
-  //const result = await prisma.observed_weather.create({ data });
-  console.log("result", result);
-
+  const result = await prisma.observed_weather.create({ data });
+  //console.log("result", result);
   return result;
 };
 
