@@ -41,6 +41,9 @@ const message = {
   READ_TEMP_WEATHER_FAIL: "시간대별 온도 조회 실패",
 
   READ_RAIN_WEATHER_SUCCESS: "시간대별 강수 조회 성공",
+
+  READ_QEUSTION_MESSAGE_SUCCESS: "오늘 날씨 물음표 멘트 조회 성공",
+  READ_QEUSTION_MESSAGE_FAIL: "오늘 날씨 물음표 멘트 조회 실패",
 };
 
 export default message;

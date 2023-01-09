@@ -12,16 +12,16 @@ import WeatherService from "../services/WeatherService";
  *  @developer 강수현
  */
 const getTodayWeather = async (req: Request, res: Response) => {
-    try {
-        const data = await WeatherService.getTodayWeather();
-        if (!data) {
-            return res.status(sc.BAD_REQUEST).send(util.fail(sc.BAD_REQUEST, rm.READ_TODAY_WEATHER_FAIL))
-        }
-        return res.status(sc.OK).send(util.success(sc.OK, rm.READ_TODAY_WEATHER_SUCCESS, data));
-    } catch (error) {
-        console.log(error);
-        res.status(sc.INTERNAL_SERVER_ERROR).send(util.fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  try {
+    const data = await WeatherService.getTodayWeather();
+    if (!data) {
+      return res.status(sc.BAD_REQUEST).send(util.fail(sc.BAD_REQUEST, rm.READ_TODAY_WEATHER_FAIL))
     }
+    return res.status(sc.OK).send(util.success(sc.OK, rm.READ_TODAY_WEATHER_SUCCESS, data));
+  } catch (error) {
+    console.log(error);
+    res.status(sc.INTERNAL_SERVER_ERROR).send(util.fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
 };
 
 /**
@@ -93,9 +93,30 @@ const getTempForecast = async (req: Request, res: Response) => {
     .send(util.success(sc.OK, rm.READ_TEMP_WEATHER_SUCCESS, data));
 };
 
+/**
+ *  @route GET /weather/today/question
+ *  @desc Get Schedule
+ *  @access public
+ *  @description 오늘 날씨 물음표 멘트 조회
+ *  @developer 강수현
+ */
+const getQuestionMessage = async (req: Request, res: Response) => {
+  try {
+    const data = await WeatherService.getQuestionMessage();
+    if (!data) {
+      return res.status(sc.BAD_REQUEST).send(util.fail(sc.BAD_REQUEST, rm.READ_QEUSTION_MESSAGE_FAIL))
+    }
+    return res.status(sc.OK).send(util.success(sc.OK, rm.READ_QEUSTION_MESSAGE_SUCCESS, data));
+  } catch (error) {
+    console.log(error);
+    res.status(sc.INTERNAL_SERVER_ERROR).send(util.fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
 export default {
-    getTodayWeather,
-    getWeatherDetail,
-    getTempForecast,
-    getRainForecast,
+  getTodayWeather,
+  getWeatherDetail,
+  getTempForecast,
+  getRainForecast,
+  getQuestionMessage,
 };

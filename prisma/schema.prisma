@@ -64,6 +64,8 @@ model observed_weather {
   pm10                Int?
   rain                Int?
   sensory_temperature Int?
+  sky                 Int?
+  pty                 Int?
 }
 
 model today_message {
