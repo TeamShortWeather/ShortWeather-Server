@@ -289,9 +289,22 @@ const updateDailyForecast = async () => {
         living_grade: 2,
       },
     })
-    return freezeResult
+    return freezeResult;
   }
-  //const airData = (await axios.get(airUrl + queryParams)).data.response.body.items.item;  
+
+  const airData = (await axios.get(airUrl + queryParams)).data.response.body.items.item;
+  if (airData[0]['h3'] == 25){
+    const airResult = await prisma.daily_forecast.updateMany({
+      where: {
+        date: date,
+      },
+      data: {
+        living: 3,
+        living_grade: 4,
+      },
+    });
+    return airResult;
+  } 
 }
 
 const createHourlyForecast = async () => {
