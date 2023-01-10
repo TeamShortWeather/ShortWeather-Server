@@ -24,6 +24,12 @@ const pty = [
   "눈날림",
 ];
 
+const dayNight = (time: String) => {
+  if (time < '1700' && time >= '0500') {
+    return true
+  } 
+  return false;
+}
 
 //* 오늘 날씨 정보 조회
 const getTodayWeather = async () => {
@@ -60,6 +66,8 @@ const getTodayWeather = async () => {
     return { rain: rainGrade, };
   }
 
+  console.log(condition());
+  
   const weatherMessage = await prisma.today_message.findMany({
     where: condition(),
     select: {
@@ -115,6 +123,7 @@ const getTodayWeather = async () => {
     breakingNews: dailyForecast.warning, //! 특보 -> string 으로 변경
     fineDust: observedToday.pm10,
     ultrafineDust: observedToday.pm25,
+    day: dayNight(time),
     weatherImage: 1, //!미정
     weatherImageDesc: "준비중입니다!", //!미정
     currentTemp: observedToday.temperature,
@@ -195,11 +204,13 @@ const getWeatherDetail = async (userId: number) => {
     goOut: {
       time: user.go_out_time,
       temp: goOut[0].temperature,
+      day: dayNight(user.go_out_time),
       image: image,
     },
     goHome: {
       time: user.go_home_time,
       temp: goHome[0].temperature,
+      day: dayNight(user.go_home_time),
       image: image,
     },
     todayWeather: {
@@ -246,6 +257,7 @@ const getTempForecast = async () => {
       date: element.date,
       time: element.time,
       temperature: element.temperature,
+      day: dayNight(element.time),
       image: element.sky != 0 ? sky[element.sky] : pty[element.pty],
     };
   });
