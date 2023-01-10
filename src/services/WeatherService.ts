@@ -45,8 +45,8 @@ const getTodayWeather = async () => {
   });
 
   const verifyLiving = () => {
-    if(dailyForecast.living) {
-      if(dailyForecast.living == 3 && observedToday.pm10 != 1){
+    if (dailyForecast.living) {
+      if (dailyForecast.living == 3 && observedToday.pm10 != 1) {
         return false;
       }
       return true;
@@ -54,9 +54,9 @@ const getTodayWeather = async () => {
   };
 
   const condition = () => {
-    if(dailyForecast.warning)
+    if (dailyForecast.warning)
       return { warning: dailyForecast.warning, };
-    if(verifyLiving()) {
+    if (verifyLiving()) {
       return {
         living: dailyForecast.living,
         living_grade: dailyForecast.living_grade,
@@ -68,6 +68,9 @@ const getTodayWeather = async () => {
     return { rain: rainGrade, };
   }
 
+  if (!observedToday || !observedYesterday || !dailyForecast)
+    return null;
+
   const weatherMessage = await prisma.today_message.findMany({
     where: condition(),
     select: {
@@ -75,46 +78,55 @@ const getTodayWeather = async () => {
     },
   });
 
-  if (!observedToday || !observedYesterday || !dailyForecast || !weatherMessage)
-    return null;
+  if (!weatherMessage) return null;
 
   const messageCount = weatherMessage.length;
   const messageIdx = Math.floor(Math.random() * messageCount);
 
-  //! 덥다, 춥다, 비슷하다 - 몇도 차이일때 기준?
-  const getCompareMessage = (
-    todayTemp: number,
-    yesterdayTemp: number,
-    month: number
-  ) => {
-    const compareMessages = [
-      "어제보다 따뜻해요",
-      "어제보다 추워요",
-      "어제보다 더워요",
-      "어제보다 선선해요",
-      "어제보다 따뜻해요",
-      "어제보다 서늘해요",
-      "어제와 비슷해요",
-    ];
-    if (todayTemp == yesterdayTemp) {
-      return compareMessages[6];
-    }
-    let idx = 0; //겨울
-    if (month == 5 || month == 9) {
-      // 봄 / 가을
-      idx = 4;
-    } else if (month > 3 && month < 9) {
-      // 여름
-      idx = 2;
-    }
-    if (todayTemp < yesterdayTemp) idx++;
-    return compareMessages[idx];
+  //^ 6, 7, 8인 경우 -> 여름 체감 온도(2) 비교 - 여름 메세지
+  //^ 5인 경우 -> 여름 체감 온도(2) 비교 - 가을 메세지
+  //^ 4, 9, 10인 경우 -> 겨울 체감 온도(3)/온도(2) 비교 - 가을 메세지
+  //^ 11, 12, 1, 2, 3인 경우 -> 겨울 체감온도(2)/온도(2) 비교 - 겨울 메세지/가을메세지
+  const compareTemp = (todayTemp: number, yesterdayTemp: number, diff: number) => {
+    if (todayTemp >= yesterdayTemp + diff)
+      return -1;
+    if (todayTemp + diff <= yesterdayTemp)
+      return 1;
+    return 0;
   };
-  const compareMessage = getCompareMessage(
-    observedToday.sensory_temperature,
-    observedYesterday.sensory_temperature,
-    now.month() + 1
-  );
+
+  const compareMessages = [
+    "어제보다 더워요", //0 - 여름
+    "어제와 비슷해요", //1
+    "어제보다 선선해요", //2
+    "어제보다 따뜻해요", //3 - 가을
+    "어제와 비슷해요", //4
+    "어제보다 서늘해요", //5
+    "어제보다 따뜻해요", //6 - 겨울
+    "어제와 비슷해요", //7
+    "어제보다 추워요", //8
+  ];
+
+  const getSeason = (month: number) => {
+    const todayTemp = observedToday.sensory_temperature;
+    const yesterdayTemp = observedYesterday.sensory_temperature;
+    if (month > 5 && month < 9) {
+      return 1 + compareTemp(todayTemp, yesterdayTemp, 2);
+    }
+    if (month == 5) {
+      return 4 + compareTemp(todayTemp, yesterdayTemp, 2);
+    }
+    if (observedToday.temperature <= 10 && observedToday.wind >= 1.3) {
+      if (month == 4 || month == 9 || month == 10) {
+        return 4 + compareTemp(todayTemp, yesterdayTemp, 3);
+      }
+      return 7 + compareTemp(todayTemp, yesterdayTemp, 2);
+    }
+    return 4 + compareTemp(observedToday.temperature, observedYesterday.temperature, 2);
+  };
+
+  const compareMessage = getSeason(now.month() + 1);
+
   const image = (observedToday.sky != 0) ? sky[observedToday.sky] : pty[observedToday.pty];
 
   const breakingNewsArr = ['', '강풍', '호우', '한파', '건조', '폭풍해일', '풍랑', '태풍', '대설', '황사', '', '', '폭염'];
@@ -123,7 +135,7 @@ const getTodayWeather = async () => {
   const result: TodayWeatherDTO = {
     location: "서울, 중구 명동",
     compareTemp: observedToday.temperature - observedYesterday.temperature,
-    compareMessage: compareMessage,
+    compareMessage: compareMessages[compareMessage],
     breakingNews: breakingNews,
     fineDust: observedToday.pm10,
     ultrafineDust: observedToday.pm25,

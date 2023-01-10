@@ -68,6 +68,7 @@ model observed_weather {
   sensory_temperature Int?
   sky                 Int?
   pty                 Int?
+  wind                Float?
 }
 
 model today_message {
