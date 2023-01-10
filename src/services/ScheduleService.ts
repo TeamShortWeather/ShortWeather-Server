@@ -292,6 +292,7 @@ const updateDailyForecast = async () => {
     return freezeResult;
   }
 
+  //* sky코드도 확인
   const airData = (await axios.get(airUrl + queryParams)).data.response.body.items.item;
   if (airData[0]['h3'] == 25){
     const airResult = await prisma.daily_forecast.updateMany({

@@ -46,14 +46,25 @@ const getTodayWeather = async () => {
     },
   });
 
+  const verifyLiving = () => {
+    if(dailyForecast.living) {
+      if(dailyForecast.living == 3 && observedToday.pm10 != 1){
+        return false;
+      }
+      return true;
+    }
+  };
+
   const condition = () => {
+    console.log(observedToday);
     if(dailyForecast.warning)
       return { warning: dailyForecast.warning, };
-    if(dailyForecast.living)
-    return {
+    if(verifyLiving()) {
+      return {
         living: dailyForecast.living,
         living_grade: dailyForecast.living_grade,
       };
+    }
     let rainGrade = 1;
     if(observedToday.rain > 60) rainGrade = 3;
     else if(observedToday.rain > 50) rainGrade = 2;
