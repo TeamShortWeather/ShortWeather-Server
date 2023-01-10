@@ -52,6 +52,8 @@ model daily_forecast {
   min_temp Int
   max_temp Int
   warning  Int?
+  living   Int?
+  livingGrade  Int?
 }
 
 model observed_weather {
