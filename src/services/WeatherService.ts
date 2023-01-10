@@ -13,68 +13,60 @@ let date = now.format("YYYYMMDD");
 let time = now.format("HH00");
 const yesterday = now.add(-1, "d").format("YYYYMMDD");
 
-const sky = ["", "맑음", "", "구름많음", "흐림"];
-const pty = [
-  "비",
-  "비 또는 눈",
-  "눈",
-  "소나기",
-  "이슬비",
-  "진눈깨비",
-  "눈날림",
-];
+const sky = ['', '맑음', '', '구름많음', '흐림'];
+const pty = ['비', '비 또는 눈', '눈', '소나기', '이슬비', '진눈깨비', '눈날림'];
 
 const dayNight = (time: String) => {
   if (time < '1700' && time >= '0500') {
     return true
-  } 
+  }
   return false;
 }
 
-//* 오늘 날씨 정보 조회
+//* 오늘 날씨 정보 조회 
 const getTodayWeather = async () => {
   //! 동시에 db 출발했다가 먼저 받아오는 친구부터 하도록 수정
   const observedToday = await prisma.observed_weather.findFirst({
     where: {
       date: date,
-      time: time, //time, //! 수정예정
-    },
+      time: time,
+    }
   });
   const dailyForecast = await prisma.daily_forecast.findFirst({
     where: {
       date: date,
-    },
+    }
   });
   const observedYesterday = await prisma.observed_weather.findFirst({
     where: {
-      date: yesterday, //yesterday,  //! 수정예정
-      time: time, //time, //! 수정예정
-    },
+      date: yesterday,
+      time: time,
+    }
   });
 
   const condition = () => {
-    if(dailyForecast.warning)
+    if (dailyForecast.warning)
       return { warning: dailyForecast.warning, };
-    if(dailyForecast.living)
-    return {
+    if (dailyForecast.living)
+      return {
         living: dailyForecast.living,
         living_grade: dailyForecast.living_grade,
       };
     let rainGrade = 1;
-    if(observedToday.rain > 60) rainGrade = 3;
-    else if(observedToday.rain > 50) rainGrade = 2;
+    if (observedToday.rain > 60) rainGrade = 3;
+    else if (observedToday.rain > 50) rainGrade = 2;
     return { rain: rainGrade, };
   }
 
   console.log(condition());
-  
+
   const weatherMessage = await prisma.today_message.findMany({
     where: condition(),
     select: {
       message: true,
     },
   });
-  
+
   if (!observedToday || !observedYesterday || !dailyForecast || !weatherMessage)
     return null;
 
@@ -115,17 +107,20 @@ const getTodayWeather = async () => {
     observedYesterday.sensory_temperature,
     now.month() + 1
   );
+  const image = (observedToday.sky != 0) ? sky[observedToday.sky] : pty[observedToday.pty];
+
+  const breakingNewsArr = ['', '강풍', '호우', '한파', '건조', '폭풍해일', '풍랑', '태풍', '대설', '황사', '', '', '폭염'];
+  const breakingNews = breakingNewsArr[dailyForecast.warning] + '특보';
 
   const result: TodayWeatherDTO = {
     location: "서울, 중구 명동",
     compareTemp: observedToday.temperature - observedYesterday.temperature,
     compareMessage: compareMessage,
-    breakingNews: dailyForecast.warning, //! 특보 -> string 으로 변경
+    breakingNews: breakingNews,
     fineDust: observedToday.pm10,
     ultrafineDust: observedToday.pm25,
     day: dayNight(time),
-    weatherImage: 1, //!미정
-    weatherImageDesc: "준비중입니다!", //!미정
+    image: image,
     currentTemp: observedToday.temperature,
     minTemp: dailyForecast.min_temp,
     maxTemp: dailyForecast.max_temp,
