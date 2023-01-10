@@ -24,6 +24,7 @@ const pty = [
   "눈날림",
 ];
 
+
 //* 오늘 날씨 정보 조회
 const getTodayWeather = async () => {
   //! 동시에 db 출발했다가 먼저 받아오는 친구부터 하도록 수정
@@ -44,15 +45,28 @@ const getTodayWeather = async () => {
       time: time, //time, //! 수정예정
     },
   });
+
+  const condition = () => {
+    if(dailyForecast.warning)
+      return { warning: dailyForecast.warning, };
+    if(dailyForecast.living)
+    return {
+        living: dailyForecast.living,
+        living_grade: dailyForecast.living_grade,
+      };
+    let rainGrade = 1;
+    if(observedToday.rain > 60) rainGrade = 3;
+    else if(observedToday.rain > 50) rainGrade = 2;
+    return { rain: rainGrade, };
+  }
+
   const weatherMessage = await prisma.today_message.findMany({
-    where: {
-      warning: dailyForecast.warning ?? 3, //? 3 - 한파 default
-    },
+    where: condition(),
     select: {
       message: true,
     },
   });
-
+  
   if (!observedToday || !observedYesterday || !dailyForecast || !weatherMessage)
     return null;
 
