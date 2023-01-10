@@ -126,7 +126,7 @@ const createObserved = async () => {
     }))
     .catch((err) => console.log(err));
 
-  let temp, humidity, rain, sensTemp;
+  let temp, humidity, rain, wind, sensTemp;
   const past = moment().add(-1, "h")
   const pastDate = past.format("YYYYMMDD");
   const pastTime = past.format("HH00");
@@ -140,18 +140,20 @@ const createObserved = async () => {
         temperature: true,
         rain: true,
         humidity: true,
-        sensory_temperature: true
+        sensory_temperature: true,
+        wind: true,
       }
     });
     temp = past_observed.temperature;
     humidity = past_observed.humidity;
     rain = past_observed.rain;
     sensTemp = past_observed.sensory_temperature;
+    wind = past_observed.wind;
   } else {
     temp = Math.floor(+ultraSrtNcst[2].obsrValue);
     humidity = +ultraSrtNcst[0].obsrValue;
     rain = Math.round(+ultraSrtNcst[1].obsrValue);
-    const wind = +ultraSrtNcst[3].obsrValue;
+    wind = +ultraSrtNcst[3].obsrValue;
 
     sensTemp = temp;
     const month = moment().month() + 1;
@@ -211,6 +213,7 @@ const createObserved = async () => {
     sensory_temperature: sensTemp,
     sky: sky,
     pty: pty,
+    wind: wind,
   };
 
   const result = await prisma.observed_weather.create({ data });
