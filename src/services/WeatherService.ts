@@ -281,12 +281,14 @@ const getTempForecast = async () => {
 };
 
 const getQuestionMessage = async () => {
-  const todayWeather = await prisma.observed_weather.findFirst({
+  const yesterdayWeather = await prisma.observed_weather.findFirst({
     where: {
       date: yesterday,
+      time: time,
     },
     select: {
       temperature: true,
+      pm10: true,
     },
   });
   const dailyForecast = await prisma.daily_forecast.findFirst({
@@ -295,22 +297,50 @@ const getQuestionMessage = async () => {
     },
     select: {
       warning: true,
+      living: true,
+      living_grade: true,
     },
   });
-  const weatherMessage = await prisma.yesterday_message.findMany({
-    where: {
-      warning: dailyForecast.warning ?? 3,
-    },
-    select: {
-      message: true,
-    },
-  });
-  const messageCount = weatherMessage.length;
-  const messageIdx = Math.floor(Math.random() * messageCount);
+
+  const verifyLiving = () => {
+    if(yesterdayWeather.pm10 == 1) {
+      return true;
+    }
+    if(!dailyForecast.living || dailyForecast.living == 3){
+      return false;
+    }
+    return true;
+  };
+
+  const condition = () => {
+    if(dailyForecast.warning)
+      return { warning: dailyForecast.warning, };
+    if(verifyLiving()) {
+      return {
+        living: dailyForecast.living ?? 3,
+        living_grade: dailyForecast.living_grade ?? 4,
+      };
+    }else {
+      return null;
+    }
+  }
+
+  let message = null;
+  if(condition()) {
+    const weatherMessage = await prisma.yesterday_message.findMany({
+      where: condition(),
+      select: {
+        message: true,
+      },
+    });
+    const messageCount = weatherMessage.length;
+    const messageIdx = Math.floor(Math.random() * messageCount);
+    message = weatherMessage[messageIdx].message;
+  }
 
   const data = {
-    temp: todayWeather.temperature,
-    weatherMessage: weatherMessage[messageIdx].message,
+    temp: yesterdayWeather.temperature,
+    weatherMessage: message,
   };
 
   return data;
