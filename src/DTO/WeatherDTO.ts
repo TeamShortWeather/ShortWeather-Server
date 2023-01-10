@@ -5,8 +5,8 @@ export interface TodayWeatherDTO {
     breakingNews: string;
     fineDust: number;
     ultrafineDust: number;
-    imageTime: string;
-    imageDesc: string;
+    day: boolean;
+    image: string;
     currentTemp: number;
     minTemp: number;
     maxTemp: number;

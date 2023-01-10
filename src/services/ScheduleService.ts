@@ -294,6 +294,69 @@ const createDailyForecast = async () => {
   return data;
 };
 
+const updateDailyForecast = async () => {
+  const date = moment().format("YYYYMMDD");
+  const time = moment().format("YYYYMMDDHH");
+
+  let queryParams =
+    "?" +
+    encodeURIComponent("serviceKey") +
+    "=" +
+    `${process.env.WEATHER_SERVICE_KEY}`; /* Service Key*/
+  queryParams +=
+    "&" + encodeURIComponent("pageNo") + "=" + encodeURIComponent("1");
+  queryParams +=
+    "&" + encodeURIComponent("numOfRows") + "=" + encodeURIComponent("100");
+  queryParams +=
+    "&" + encodeURIComponent("dataType") + "=" + encodeURIComponent("JSON");
+  queryParams +=
+    "&" + encodeURIComponent("areaNo") + "=" + encodeURIComponent(1100000000);
+  queryParams +=
+    "&" + encodeURIComponent("time") + "=" + encodeURIComponent(time);
+  
+  const freezeUrl = "http://apis.data.go.kr/1360000/LivingWthrIdxServiceV3/getFreezeIdxV3"
+  const uvUrl = "http://apis.data.go.kr/1360000/LivingWthrIdxServiceV3/getUVIdxV3"
+  const airUrl = "http://apis.data.go.kr/1360000/LivingWthrIdxServiceV3/getAirDiffusionIdxV3"
+
+  const uvData = (await axios.get(uvUrl + queryParams)).data.response.body.items.item;  
+  if (uvData[0]['h1']>5) {
+    let living_grade;
+    
+    if (uvData[0]['h1']<8) {
+      living_grade = 3;
+    } else {
+      living_grade = 4;
+    }
+
+    const uvResult = await prisma.daily_forecast.updateMany({
+      where: {
+        date: date,
+      },
+      data: {
+        living: 1,
+        living_grade: living_grade,
+      },
+    })
+
+    return uvResult;
+  }
+
+  const freezeData = (await axios.get(freezeUrl + queryParams)).data.response.body.items.item;  
+  if (freezeData[0]['h1']>24 && freezeData[0]['h1']<100){
+    const freezeResult = await prisma.daily_forecast.updateMany({
+      where: {
+        date: date,
+      },
+      data: {
+        living: 2,
+        living_grade: 2,
+      },
+    })
+    return freezeResult
+  }
+  //const airData = (await axios.get(airUrl + queryParams)).data.response.body.items.item;  
+}
+
 const createHourlyForecast = async () => {
   const date = moment().format("YYYYMMDD");
 
@@ -357,6 +420,7 @@ const observedService = {
   createObserved,
   createDailyForecast,
   createHourlyForecast,
+  updateDailyForecast,
 };
 
 export default observedService;

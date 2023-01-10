@@ -47,6 +47,21 @@ const createDailyForecast = async (req: Request, res: Response) => {
 };
 
 /**
+ *  @route PUT /schedule/forecast/daily
+ *  @desc Post Schedule
+ *  @access public
+ *  @description 예보 기상지수 업데이트
+ *  @developer 김도연
+ */
+ const updateDailyForecast = async (req: Request, res: Response) => {
+  const data = await ScheduleService.updateDailyForecast();
+
+  return res
+    .status(200)
+    .json({ status: 200, message: "기상지수 저장 성공", data: data });
+};
+
+/**
  *  @route POST /schedule/forecast/hourly
  *  @desc Post Schedule
  *  @access public
@@ -71,4 +86,5 @@ export default {
   createObserved,
   createDailyForecast,
   createHourlyForecast,
+  updateDailyForecast,
 };
