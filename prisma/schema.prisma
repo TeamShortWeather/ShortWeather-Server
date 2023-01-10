@@ -80,7 +80,10 @@ model today_message {
 }
 
 model yesterday_message {
-  id      Int    @id @default(autoincrement())
-  warning Int
-  message String @db.VarChar(255)
+  id           Int    @id @default(autoincrement())
+  warning      Int?
+  message      String @db.VarChar(255)
+  living       Int?
+  living_grade Int?
+  rain         Int?
 }
