@@ -44,14 +44,22 @@ const getTodayWeather = async () => {
       time: time, //time, //! 수정예정
     },
   });
+
+  const condition = dailyForecast.warning==null ? {
+    living: dailyForecast.living,
+    living_grade: dailyForecast.living_grade,
+  } : {
+    warning: dailyForecast.warning,
+  }
+  
   const weatherMessage = await prisma.today_message.findMany({
-    where: {
-      warning: dailyForecast.warning ?? 3, //? 3 - 한파 default
-    },
+    where: condition,
     select: {
       message: true,
     },
   });
+  
+  console.log(weatherMessage)
 
   if (!observedToday || !observedYesterday || !dailyForecast || !weatherMessage)
     return null;
