@@ -44,21 +44,29 @@ const getTodayWeather = async () => {
     }
   });
 
+  const verifyLiving = () => {
+    if(dailyForecast.living) {
+      if(dailyForecast.living == 3 && observedToday.pm10 != 1){
+        return false;
+      }
+      return true;
+    }
+  };
+
   const condition = () => {
-    if (dailyForecast.warning)
+    if(dailyForecast.warning)
       return { warning: dailyForecast.warning, };
-    if (dailyForecast.living)
+    if(verifyLiving()) {
       return {
         living: dailyForecast.living,
         living_grade: dailyForecast.living_grade,
       };
+    }
     let rainGrade = 1;
     if (observedToday.rain > 60) rainGrade = 3;
     else if (observedToday.rain > 50) rainGrade = 2;
     return { rain: rainGrade, };
   }
-
-  console.log(condition());
 
   const weatherMessage = await prisma.today_message.findMany({
     where: condition(),
@@ -110,7 +118,7 @@ const getTodayWeather = async () => {
   const image = (observedToday.sky != 0) ? sky[observedToday.sky] : pty[observedToday.pty];
 
   const breakingNewsArr = ['', '강풍', '호우', '한파', '건조', '폭풍해일', '풍랑', '태풍', '대설', '황사', '', '', '폭염'];
-  const breakingNews = breakingNewsArr[dailyForecast.warning] + '특보';
+  const breakingNews = !dailyForecast.warning ? null : breakingNewsArr[dailyForecast.warning] + '특보';
 
   const result: TodayWeatherDTO = {
     location: "서울, 중구 명동",
