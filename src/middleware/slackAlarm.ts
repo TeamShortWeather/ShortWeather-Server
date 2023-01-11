@@ -6,16 +6,16 @@ const API_TOKEN = config.slackAlarm; //env에 달았던 웹 훅 url
 const colors = {
   primary: "#007bff",
   info: "#17a2b8",
-  success: "#28a745",
-  warning: "#ffc107",
-  danger: "#dc3545",
+  success: "#59B06D",
+  warning: "#FFC700",
+  danger: "#FF4F4F",
 };
 
 // 슬랙 에러 스택 보여주고 싶을 경우, 마크다운 안에 넣어 이쁘게 보여주려고 사용
 export interface SlackMrkdwnFormat {
   title: string;
   value: string;
-}
+};
 
 // 슬랙 메세지 담을 형태
 export interface SlackMessageFormat {
@@ -24,14 +24,14 @@ export interface SlackMessageFormat {
   text: string;
   fields?: SlackMrkdwnFormat[];
   footer?: string; // From API Server [production]
-}
+};
 
 // mrkdown
 export interface SlackMessage {
   mrkdwn: boolean;
   text: string;
   attachments: SlackMessageFormat[];
-}
+};
 
 const getChannels = () => {
   return {
