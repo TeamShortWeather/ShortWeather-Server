@@ -114,7 +114,7 @@ const getTodayWeather = async () => {
   const getSeason = (month: number) => {
     const todayTemp = observedToday.sensory_temperature;
     const yesterdayTemp = observedYesterday.sensory_temperature;
-    
+
     if (month > 5 && month < 9) {
       return 1 + compareTemp(todayTemp, yesterdayTemp, 2);
     }
@@ -244,7 +244,7 @@ const getWeatherDetail = async (userId: number) => {
     },
     todayWeather: {
       humidity: observed.humidity,
-      surise: daily.sunrise,
+      sunrise: daily.sunrise,
       sunset: daily.sunset,
       fineDust: observed.pm25,
       ultraFineDust: observed.pm10,
