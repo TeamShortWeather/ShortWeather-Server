@@ -160,6 +160,8 @@ const getRainForecast = async () => {
       id: true,
     },
   });
+  console.log(time);
+  
 
   const result = await prisma.hourly_forecast.findMany({
     where: {
