@@ -9,7 +9,7 @@ import { validationResult } from "express-validator";
 const dotenv = require("dotenv");
 dotenv.config();
 
-const createUser = async (req: Request, res: Response) => {
+const createUser = async (req: Request, res: Response, next: NextFunction) => {
   //? validation의 결과를 바탕으로 분기 처리
   const error = validationResult(req);
   if (!error.isEmpty()) {
@@ -51,19 +51,12 @@ const createUser = async (req: Request, res: Response) => {
       );
   } catch (error) {
     console.log(error);
-    res
-      .status(statusCode.INTERNAL_SERVER_ERROR)
-      .send(
-        util.fail(
-          statusCode.INTERNAL_SERVER_ERROR,
-          message.INTERNAL_SERVER_ERROR
-        )
-      );
+    next(error);
   }
 };
 
 //* 유저 등록 조회
-const getUserByDevice = async (req: Request, res: Response) => {
+const getUserByDevice = async (req: Request, res: Response, next: NextFunction) => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
     return res
@@ -100,14 +93,7 @@ const getUserByDevice = async (req: Request, res: Response) => {
       .send(util.success(statusCode.OK, message.READ_USER_SUCCESS, result));
   } catch (error) {
     console.log(error);
-    res
-      .status(statusCode.INTERNAL_SERVER_ERROR)
-      .send(
-        util.fail(
-          statusCode.INTERNAL_SERVER_ERROR,
-          message.INTERNAL_SERVER_ERROR
-        )
-      );
+    next(error);
   }
 };
 
