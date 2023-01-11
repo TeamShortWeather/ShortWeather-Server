@@ -10,8 +10,9 @@ moment.suppressDeprecationWarnings = true;
 
 let now = moment();
 let date = now.format("YYYYMMDD");
-let time = now.format("HH00");
+let time = now.format("hh00");
 const yesterday = now.add(-1, "d").format("YYYYMMDD");
+console.log(now);
 
 const sky = ['', '맑음', '', '구름많음', '흐림'];
 const pty = ['비', '비 또는 눈', '눈', '소나기', '이슬비', '진눈깨비', '눈날림'];
@@ -213,8 +214,8 @@ const getWeatherDetail = async (userId: number) => {
 
   const image = goOut[0].sky != 0 ? sky[goOut[0].sky] : pty[goOut[0].pty];
 
-  const observed = await prisma.observed_weather.findFirst();
-  const daily = await prisma.daily_forecast.findFirst();
+  const observed = await prisma.observed_weather.findFirst({orderBy: { id: "desc" }});
+  const daily = await prisma.daily_forecast.findFirst({orderBy: { id: "desc" }});
 
   const data = {
     location: "서울, 중구 명동",
