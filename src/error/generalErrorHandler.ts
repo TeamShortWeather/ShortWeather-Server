@@ -17,7 +17,7 @@ const generalErrorHandler: ErrorRequestHandler = (
   if (!statusCode || statusCode == 500) {
     const message: SlackMessageFormat = {
         color: slackAlarm.colors.danger,
-        title: "포토서퍼 서버 에러",
+        title: "ShortWeather 서버 에러",
         text: err.message,
         fields: [
           {
