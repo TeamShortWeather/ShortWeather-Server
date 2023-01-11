@@ -322,9 +322,11 @@ const getQuestionMessage = async () => {
         living: dailyForecast.living ?? 3,
         living_grade: dailyForecast.living_grade ?? 4,
       };
-    }else {
-      return null;
     }
+    //! 임시
+    return {
+      warning: dailyForecast.warning,
+    };
   }
 
   let message = null;
