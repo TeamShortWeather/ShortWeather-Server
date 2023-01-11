@@ -385,7 +385,7 @@ const createHourlyForecast = async () => {
     "=" +
     `${process.env.SHORT_TERM_FORECAST_KEY}`; /* Service Key*/
   fcstQueryParams +=
-    "&" + encodeURIComponent("pageNo") + "=" + encodeURIComponent("1");
+    "&" + encodeURIComponent("pageNo") + "=" + encodeURIComponent("2");
   fcstQueryParams +=
     "&" + encodeURIComponent("numOfRows") + "=" + encodeURIComponent("289");
   fcstQueryParams +=
