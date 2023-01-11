@@ -10,9 +10,8 @@ moment.suppressDeprecationWarnings = true;
 
 let now = moment();
 let date = now.format("YYYYMMDD");
-let time = now.format("hh00");
+let time = now.format("HH00");
 const yesterday = now.add(-1, "d").format("YYYYMMDD");
-console.log(now);
 
 const sky = ['', '맑음', '', '구름많음', '흐림'];
 const pty = ['비', '비 또는 눈', '눈', '소나기', '이슬비', '진눈깨비', '눈날림'];
@@ -26,6 +25,10 @@ const dayNight = (time: String) => {
 
 //* 오늘 날씨 정보 조회 
 const getTodayWeather = async () => {
+  let now = moment();
+  let date = now.format("YYYYMMDD");
+  let time = now.format("HH00");
+
   //! 동시에 db 출발했다가 먼저 받아오는 친구부터 하도록 수정
   const observedToday = await prisma.observed_weather.findFirst({
     where: {
@@ -111,6 +114,7 @@ const getTodayWeather = async () => {
   const getSeason = (month: number) => {
     const todayTemp = observedToday.sensory_temperature;
     const yesterdayTemp = observedYesterday.sensory_temperature;
+    
     if (month > 5 && month < 9) {
       return 1 + compareTemp(todayTemp, yesterdayTemp, 2);
     }
@@ -152,6 +156,10 @@ const getTodayWeather = async () => {
 };
 
 const getRainForecast = async () => {
+  const now = moment();
+  const date = now.format("YYYYMMDD");
+  const time = now.format("HH00");
+  
   const start = await prisma.hourly_forecast.findFirst({
     where: {
       date: date,
@@ -182,6 +190,9 @@ const getRainForecast = async () => {
 };
 
 const getWeatherDetail = async (userId: number) => {
+  const now = moment();
+  const date = now.format("YYYYMMDD");
+  
   const user = await prisma.user.findUnique({
     where: {
       id: userId,
@@ -244,6 +255,10 @@ const getWeatherDetail = async (userId: number) => {
 };
 
 const getTempForecast = async () => {
+  const now = moment();
+  const date = now.format("YYYYMMDD");
+  const time = now.format("HH00");
+
   const start = await prisma.hourly_forecast.findFirst({
     where: {
       date: date,
@@ -284,6 +299,10 @@ const getTempForecast = async () => {
 };
 
 const getQuestionMessage = async () => {
+  const now = moment();
+  const time = now.format("HH00");
+  const yesterday = now.add(-1, "d").format("YYYYMMDD");
+
   const yesterdayWeather = await prisma.observed_weather.findFirst({
     where: {
       date: yesterday,
@@ -294,6 +313,7 @@ const getQuestionMessage = async () => {
       pm10: true,
     },
   });
+
   const dailyForecast = await prisma.daily_forecast.findFirst({
     where: {
       date: yesterday,
