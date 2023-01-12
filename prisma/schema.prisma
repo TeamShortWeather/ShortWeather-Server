@@ -78,6 +78,8 @@ model today_message {
   living       Int?
   living_grade Int?
   rain         Int?
+  sky          Int?
+  pty          Int?
 }
 
 model yesterday_message {
@@ -87,4 +89,6 @@ model yesterday_message {
   living       Int?
   living_grade Int?
   rain         Int?
+  sky          Int?
+  pty          Int?
 }

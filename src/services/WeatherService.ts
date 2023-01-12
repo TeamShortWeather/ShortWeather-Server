@@ -73,9 +73,19 @@ const getTodayWeather = async () => {
         living_grade: dailyForecast.living_grade,
       };
     }
-    let rainGrade = 1;
-    if (observedToday.rain > 60) rainGrade = 3;
-    else if (observedToday.rain > 50) rainGrade = 2;
+    if (observedToday.rain < 50) {
+      if (observedToday.sky==1)
+        return { rain: 1, }
+      if (observedToday.sky==4)
+        return { sky: 4, }
+      if (observedToday.sky==3)
+        return { sky: 3, }
+      if (observedToday.pty==4)
+        return { pty: 4, }
+    }
+    let rainGrade;
+    if (observedToday.rain >= 60) rainGrade = 3;
+    else if (observedToday.rain >= 50) rainGrade = 2;
     return { rain: rainGrade, };
   } 
     
