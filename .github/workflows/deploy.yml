@@ -40,7 +40,6 @@ jobs:
         working-directory: ./
         run: |
           yarn
-          yarn run build
           
       - name: zip file
         run: zip -r shortweather.zip ./dist ./scripts ./appspec.yml ./.env ./package.json
