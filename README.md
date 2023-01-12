@@ -124,14 +124,19 @@
 ### <strong> ☔️ APIs ☔️ </strong>
 |   EndPoint   |               detail               | developer | done |
 | :------: | :--------------------------------: | :-------: |:--: |
-|   User  |       유저 등록 확인       |   민욱    |  ❌  |
-|         |       유정 정보 입력하기       |   도연    |  ❌  |
-|   Setting      |       기상시간 설정       |   수현    |  ❌  |
+|   User  |       유저 등록 확인       |   수현    |  ✅  |
+|         |       유정 정보 입력하기       |   수현    |  ✅  |
+|   Setting   |       기상시간 설정       |   민욱    |  ❌  |
 |         |       외출/귀가시간대 설정       |   민욱    |  ❌  |
-|   Weather1   |       오늘 날씨 정보 조회       |   도연    |  ❌  |
-|   Weather2   |       시간별 오늘 날씨 정보 조회       |   수현    |  ❌  |
-|         |       시간대별 날씨 - 날씨 조회       |   민욱    |  ❌  |
-|         |       시간대별 날씨 - 강수 조회       |   수현    |  ❌  |
+|   Weather1   |       오늘 날씨 정보 조회       |   수현    |  ✅  |
+|   Weather1   |       물음표 메세지 조회       |   수현    |  ✅  |
+|   Weather2   |       오늘 날씨 정보 상세 조회       |   도연    |  ✅  |
+|         |       시간대별 날씨 - 날씨 조회       |   도연    |  ✅  |
+|         |       시간대별 날씨 - 강수 조회       |   민욱    |  ✅  |
+|   Schedule   |       하루 예보 저장       |   도연    |  ✅  |
+|         |       시간대별 예보 저장       |   민욱    |  ✅  |
+|         |       실시간 관측값 저장       |   수현    |  ✅  |
+
 
 <br>
 
@@ -142,7 +147,8 @@
 ## <strong> ERD & Directory Tree</strong>
 <details>
 <summary>🗄 ERD</summary>
-<img src="https://user-images.githubusercontent.com/82046935/210375222-d0b48e33-0555-466d-a526-8449eec7cfbd.png">
+
+<img alt="스크린샷 2023-01-13 04 45 51" src="https://user-images.githubusercontent.com/81256252/212165910-8e634d2b-35c7-4130-a609-3baaf27144b7.png">
 
 </details>
 <br>
@@ -169,3 +175,91 @@
 ```
 </details>
 <br>
+
+## <strong>package.json</strong>
+```
+{
+  "name": "node-typescript-init",
+  "version": "1.0.0",
+  "description": "> 31th IN SOPT ShortWeather <br>\r > 프로젝트 기간 : 2022.12.10 ~",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon",
+    "build": "tsc && node dist",
+    "test": "mocha test/* --timeout 10000 -exit -r ts-node/register",
+    "prepare": "husky install"
+  },
+  "author": "doyeoo <ehdusla013@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.15",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/mocha": "^9.1.1",
+    "@types/multer": "^1.4.7",
+    "@types/multer-s3": "^2.7.12",
+    "@types/mysql": "^2.15.21",
+    "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^5.30.5",
+    "@typescript-eslint/parser": "^5.30.5",
+    "chai": "^4.3.7",
+    "eslint": "^8.19.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.0",
+    "jest": "^29.3.1",
+    "mocha": "^10.2.0",
+    "nodemon": "^2.0.20",
+    "supertest": "^6.3.3",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.8.1",
+    "accuweather": "^1.0.1",
+    "apple-auth": "^1.0.7",
+    "aws-sdk": "^2.1171.0",
+    "axios": "^1.2.2",
+    "dayjs": "^1.11.7",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.2",
+    "express-validator": "^6.14.0",
+    "firebase-admin": "^11.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "logger": "^0.0.1",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.38",
+    "multer": "^1.4.4",
+    "multer-s3": "^2.10.0",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
+    "node-schedule": "^2.1.0",
+    "pg": "^8.7.3",
+    "prisma": "^4.8.1",
+    "reflect-metadata": "^0.1.13",
+    "request": "^2.88.2",
+    "typeorm": "^0.2",
+    "typeorm-naming-strategies": "^2.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "yarn run test"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TeamShortWeather/ShortWeather-Server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TeamShortWeather/ShortWeather-Server/issues"
+  },
+  "homepage": "https://github.com/TeamShortWeather/ShortWeather-Server#readme",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": []
+}
+```
