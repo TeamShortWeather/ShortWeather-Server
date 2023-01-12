@@ -40,7 +40,6 @@ jobs:
         working-directory: ./
         run: |
           yarn
-          yarn run build
           
       - name: zip file
         run: zip -r shortweather.zip ./dist ./scripts ./appspec.yml ./.env ./package.json
@@ -57,7 +56,7 @@ jobs:
 
       - name: deploy with AWS codeDeploy
         run: aws deploy create-deployment
-          --application-name hous-codedeploy
+          --application-name shortweather-deploy
           --deployment-config-name CodeDeployDefault.OneAtATime
           --deployment-group-name shortweather-group
           --s3-location bucket=shortweather-bucket,bundleType=zip,key=deploy/shortweather.zip
