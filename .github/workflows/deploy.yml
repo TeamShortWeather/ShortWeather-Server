@@ -56,7 +56,7 @@ jobs:
 
       - name: deploy with AWS codeDeploy
         run: aws deploy create-deployment
-          --application-name shortweather-codedeploy
+          --application-name shortweather-deploy
           --deployment-config-name CodeDeployDefault.OneAtATime
           --deployment-group-name shortweather-group
           --s3-location bucket=shortweather-bucket,bundleType=zip,key=deploy/shortweather.zip
