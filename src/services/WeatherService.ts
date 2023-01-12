@@ -374,9 +374,10 @@ const getQuestionMessage = async () => {
       if (yesterdayWeather.pty==4)
         return { pty: 4, }
     }
-    return {
-      warning: dailyForecast.warning,
-    };
+    let rainGrade;
+    if (yesterdayWeather.rain >= 60) rainGrade = 3;
+    else if (yesterdayWeather.rain >= 50) rainGrade = 2;
+    return { rain: rainGrade, };
   }
 
   let message = null;
