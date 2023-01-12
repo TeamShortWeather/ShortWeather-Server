@@ -28,6 +28,7 @@ const getTodayWeather = async () => {
   let now = moment();
   let date = now.format("YYYYMMDD");
   let time = now.format("HH00");
+  let yesterday = now.add(-1, "d").format("YYYYMMDD");  
 
   //! 동시에 db 출발했다가 먼저 받아오는 친구부터 하도록 수정
   const observedToday = await prisma.observed_weather.findFirst({
@@ -36,11 +37,17 @@ const getTodayWeather = async () => {
       time: time,
     }
   });
+
+  if (time<'0300') {
+    date = yesterday;
+  }
+
   const dailyForecast = await prisma.daily_forecast.findFirst({
     where: {
       date: date,
     }
   });
+  
   const observedYesterday = await prisma.observed_weather.findFirst({
     where: {
       date: yesterday,
@@ -70,9 +77,9 @@ const getTodayWeather = async () => {
     if (observedToday.rain > 60) rainGrade = 3;
     else if (observedToday.rain > 50) rainGrade = 2;
     return { rain: rainGrade, };
-  }
-
-  if (!observedToday || !observedYesterday || !dailyForecast)
+  } 
+    
+  if (!observedToday || !observedYesterday || !dailyForecast) 
     return null;
 
   const weatherMessage = await prisma.today_message.findMany({
