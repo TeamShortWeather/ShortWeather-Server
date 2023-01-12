@@ -328,9 +328,12 @@ const getQuestionMessage = async () => {
     select: {
       temperature: true,
       pm10: true,
+      rain: true,
+      sky: true,
+      pty: true,
     },
   });
-
+  
   const dailyForecast = await prisma.daily_forecast.findFirst({
     where: {
       date: yesterday,
@@ -361,7 +364,16 @@ const getQuestionMessage = async () => {
         living_grade: dailyForecast.living_grade ?? 4,
       };
     }
-    //! 임시
+    if (yesterdayWeather.rain < 50) {
+      if (yesterdayWeather.sky==1)
+        return { rain: 1, }
+      if (yesterdayWeather.sky==4)
+        return { sky: 4, }
+      if (yesterdayWeather.sky==3)
+        return { sky: 3, }
+      if (yesterdayWeather.pty==4)
+        return { pty: 4, }
+    }
     return {
       warning: dailyForecast.warning,
     };
