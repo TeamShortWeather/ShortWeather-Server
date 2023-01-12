@@ -124,14 +124,19 @@
 ### <strong> ☔️ APIs ☔️ </strong>
 |   EndPoint   |               detail               | developer | done |
 | :------: | :--------------------------------: | :-------: |:--: |
-|   User  |       유저 등록 확인       |   민욱    |  ❌  |
-|         |       유정 정보 입력하기       |   도연    |  ❌  |
-|   Setting      |       기상시간 설정       |   수현    |  ❌  |
+|   User  |       유저 등록 확인       |   수현    |  ✅  |
+|         |       유정 정보 입력하기       |   수현    |  ✅  |
+|   Setting   |       기상시간 설정       |   민욱    |  ❌  |
 |         |       외출/귀가시간대 설정       |   민욱    |  ❌  |
-|   Weather1   |       오늘 날씨 정보 조회       |   도연    |  ❌  |
-|   Weather2   |       시간별 오늘 날씨 정보 조회       |   수현    |  ❌  |
-|         |       시간대별 날씨 - 날씨 조회       |   민욱    |  ❌  |
-|         |       시간대별 날씨 - 강수 조회       |   수현    |  ❌  |
+|   Weather1   |       오늘 날씨 정보 조회       |   수현    |  ✅  |
+|   Weather1   |       물음표 메세지 조회       |   수현    |  ✅  |
+|   Weather2   |       오늘 날씨 정보 상세 조회       |   도연    |  ✅  |
+|         |       시간대별 날씨 - 날씨 조회       |   도연    |  ✅  |
+|         |       시간대별 날씨 - 강수 조회       |   민욱    |  ✅  |
+|   Schedule   |       하루 예보 저장       |   도연    |  ✅  |
+|         |       시간대별 예보 저장       |   민욱    |  ✅  |
+|         |       실시간 관측값 저장       |   수현    |  ✅  |
+
 
 <br>
 
@@ -142,7 +147,8 @@
 ## <strong> ERD & Directory Tree</strong>
 <details>
 <summary>🗄 ERD</summary>
-<img src="https://user-images.githubusercontent.com/82046935/210375222-d0b48e33-0555-466d-a526-8449eec7cfbd.png">
+
+<img alt="스크린샷 2023-01-13 04 45 51" src="https://user-images.githubusercontent.com/81256252/212165910-8e634d2b-35c7-4130-a609-3baaf27144b7.png">
 
 </details>
 <br>
