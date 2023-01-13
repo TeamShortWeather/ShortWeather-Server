@@ -14,6 +14,11 @@
 
 <br>
 
+### <strong> 🌥 서비스 핵심 기능 소개 🌥 </strong>
+![cover](https://user-images.githubusercontent.com/70002218/212327582-b27fd2c9-5286-4ab2-9c13-2bf87efc32a7.png)
+
+<br>
+
 ### <strong> 🏃 Used 🏃 </strong>
 <br>
 <p>
