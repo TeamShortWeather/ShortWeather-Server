@@ -8,7 +8,7 @@
     "build": "tsc",
     "test": "mocha test/* --timeout 10000 -exit -r ts-node/register",
     "prepare": "husky install",
-    "greeting": "hello husky!"
+    "pre-commit": "hello husky!"
   },
   "author": "doyeoo <ehdusla013@gmail.com>",
   "license": "ISC",
