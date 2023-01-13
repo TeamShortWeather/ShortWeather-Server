@@ -345,7 +345,7 @@ const updateDailyForecast = async () => {
   }
 
   const freezeData = (await axios.get(freezeUrl + queryParams)).data.response.body.items.item;  
-  if (freezeData[0]['h1']>24 && freezeData[0]['h1']<100){
+  if (freezeData[0]['h1']==50 || freezeData[0]['h1']==75){
     const freezeResult = await prisma.daily_forecast.updateMany({
       where: {
         date: date,
