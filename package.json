@@ -7,7 +7,8 @@
     "dev": "nodemon",
     "build": "tsc",
     "test": "mocha test/* --timeout 10000 -exit -r ts-node/register",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "greeting": "echo 'hello husky'"
   },
   "author": "doyeoo <ehdusla013@gmail.com>",
   "license": "ISC",
@@ -38,7 +39,6 @@
   },
   "dependencies": {
     "@prisma/client": "^4.8.1",
-    "accuweather": "^1.0.1",
     "apple-auth": "^1.0.7",
     "aws-sdk": "^2.1171.0",
     "axios": "^1.2.2",

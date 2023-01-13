@@ -1197,15 +1197,6 @@ accepts@~1.3.8:
     mime-types "~2.1.34"
     negotiator "0.6.3"
 
-accuweather@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/accuweather/-/accuweather-1.0.1.tgz#d5aafae569511c044cfbb077cb16d07c01e98ce2"
-  integrity sha512-g72iY2vs6+W2DKXISmGuie2XxzOKw070e/NrbpWFWGaJnZOHD7L6DemjMLqg1elLLGZEzueNFulBa01WpCdJ3Q==
-  dependencies:
-    moment "^2.13.0"
-    query-string "^4.2.2"
-    request "^2.72.0"
-
 acorn-jsx@^5.3.2:
   version "5.3.2"
   resolved "https://registry.npmjs.org/acorn-jsx/-/acorn-jsx-5.3.2.tgz"

@@ -31,12 +31,23 @@ const getTodayWeather = async () => {
   let yesterday = now.add(-1, "d").format("YYYYMMDD");  
 
   //! 동시에 db 출발했다가 먼저 받아오는 친구부터 하도록 수정
-  const observedToday = await prisma.observed_weather.findFirst({
+  let observedToday = await prisma.observed_weather.findFirst({
     where: {
       date: date,
       time: time,
     }
   });
+
+  if (!observedToday) {
+    const beforeTime = now.add(-1, "H").format("HH00");
+    
+    observedToday = await prisma.observed_weather.findFirst({
+      where: {
+        date: date,
+        time: beforeTime,
+      }
+    });
+  }
 
   if (time<'0300') {
     date = yesterday;
