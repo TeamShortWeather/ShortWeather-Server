@@ -84,7 +84,7 @@ const createObserved = async () => {
   }
 
   function dustFilter(item) {
-    const array = ['중구', '종로구'];
+    const array = ['중구', '종로구', '서대문구'];
     if (array.includes(item.stationName))
       return true;
     return false;
