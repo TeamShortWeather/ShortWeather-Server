@@ -218,7 +218,6 @@
   },
   "dependencies": {
     "@prisma/client": "^4.8.1",
-    "accuweather": "^1.0.1",
     "apple-auth": "^1.0.7",
     "aws-sdk": "^2.1171.0",
     "axios": "^1.2.2",
