@@ -31,7 +31,7 @@ const message = {
   READ_USER_SUCCESS: '유저 등록 조회 성공',
   READ_USER_UNAUTHORIZED: '등록되지 않은 유저입니다.',
 
-  READ_TODAY_WEATHER_SUCCESS: '오늘 날씨 정보 조회 성공공',
+  READ_TODAY_WEATHER_SUCCESS: '오늘 날씨 정보 조회 성공',
   READ_TODAY_WEATHER_FAIL: '오늘 날씨 정보 조회 실패',
 
   READ_WEATHER_DETAIL_SUCCESS: '오늘 날씨 상세 조회 성공',
