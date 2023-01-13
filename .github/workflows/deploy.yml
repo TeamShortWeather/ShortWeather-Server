@@ -34,6 +34,8 @@ jobs:
           echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
           echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
           echo JWT_ALGO=${{ secrets.JWT_ALGO }} >> .env
+          echo JWT_ALGO=${{ secrets.WEATHER_API_KEY }} >> .env
+          echo JWT_ALGO=${{ secrets.WEATHER_SERVICE_KEY }} >> .env
           cat .env
 
       - name: build server files
