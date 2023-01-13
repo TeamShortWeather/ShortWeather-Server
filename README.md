@@ -19,7 +19,7 @@
 
 <br>
 
-### <strong> 🏃 Used 🏃 </strong>
+### <strong> ☀️ Used ☀️ </strong>
 <br>
 <p>
 <img alt="TypeScript" src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white"/>
@@ -267,3 +267,15 @@
   "keywords": []
 }
 ```
+	
+	
+## <strong> Server architecture</strong>
+	
+![archetecture](https://user-images.githubusercontent.com/82046935/212339135-94db51b8-c2ef-4f6e-81d1-c99fb5d13bdb.png)
+
+	
+	
+	
+	
+	
+	
