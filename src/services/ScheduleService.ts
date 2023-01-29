@@ -118,6 +118,7 @@ const createObserved = async () => {
       if (fcstRes.header.resultCode == "00") {
         const fcstData = fcstRes.body.items.item;
         const fcstFiltered = fcstData.filter(fcstFilter);
+        console.log(fcstData);
         const fcstValue = fcstFiltered.map((element) => {
           return { category: element.category, obsrValue: element.fcstValue };
         });
@@ -358,9 +359,18 @@ const updateDailyForecast = async () => {
     return freezeResult;
   }
 
-  //* sky코드도 확인
+  const sky = await prisma.observed_weather.findFirst({
+    where: {
+      date: date,
+      time: time,
+    },
+    select: {
+      sky: true,
+    },
+  });
+  
   const airData = (await axios.get(airUrl + queryParams)).data.response.body.items.item;
-  if (airData[0]['h3'] == 25){
+  if (airData[0]['h3'] == 25 && +sky == 1){
     const airResult = await prisma.daily_forecast.updateMany({
       where: {
         date: date,
